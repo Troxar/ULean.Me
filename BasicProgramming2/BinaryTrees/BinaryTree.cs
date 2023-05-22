@@ -11,47 +11,50 @@ public class BinaryTree<T> where T : IComparable
         if (_root is null)
             _root = new Node { Key = key };
         else
-            Add(_root, key);
+            AddToTree(key);
     }
 
-    private void Add(Node node, T key)
+    private void AddToTree(T key)
     {
-        if (node.Key.CompareTo(key) > 0)
+        var node = _root;
+        while (true)
         {
-            if (node.Left is null)
-                node.Left = new Node { Key = key};
+            var comparison = node.Key.CompareTo(key);
+            if (comparison > 0 && node.Left is null)
+            {
+                node.Left = new Node { Key = key };
+                break;
+            }
+            else if (comparison > 0)
+                node = node.Left;
+            else if (comparison <= 0 && node.Right is null)
+            {
+                node.Right = new Node { Key = key };
+                break;
+            }
             else
-                Add(node.Left, key);
-        }
-        else
-        {
-            if (node.Right is null)
-                node.Right = new Node { Key = key};
-            else
-                Add(node.Right, key);
+                node = node.Right;
         }
     }
 
     public bool Contains(T key)
     {
-        return Contains(_root, key);
-    }
-
-    private bool Contains(Node node, T key)
-    {
-        if (node is null)
-            return false;
-
-        var comparison = node.Key.CompareTo(key);
-        if (comparison > 0)
-            return Contains(node.Left, key);
-        else if (comparison < 0)
-            return Contains(node.Right, key);
-        else
-            return true;
+        var node = _root;
+        while (true)
+        {
+            if (node is null)
+                return false;
+            var comparison = node.Key.CompareTo(key);
+            if (comparison > 0)
+                node = node.Left;
+            else if (comparison < 0)
+                node = node.Right;
+            else
+                return true;
+        }
     }
 	
-	private class Node
+    private class Node
     {
         internal T Key;
         internal Node Left;
