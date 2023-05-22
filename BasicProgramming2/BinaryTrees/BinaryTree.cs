@@ -6,74 +6,73 @@ namespace BinaryTrees;
 
 public class BinaryTree<T> : IEnumerable<T> where T : IComparable
 {
-    private Node _root;
+    private bool _hasKey;
+    private T _key;
+    private BinaryTree<T> _left;
+    private BinaryTree<T> _right;
+    private int _count;
 
     public void Add(T key)
     {
-        if (_root is null)
-            _root = new Node(key);
+        _count++;
+        if (!_hasKey)
+        {
+            _hasKey = true;
+            _key = key;
+        }
         else
-            AddToTree(key);
+        {
+            var comparison = _key.CompareTo(key);
+            if (comparison > 0 && _left is null)
+                _left = new BinaryTree<T>(key);
+            else if (comparison > 0)
+                _left.Add(key);
+            else if (comparison <= 0 && _right is null)
+                _right = new BinaryTree<T>(key);
+            else
+                _right.Add(key);
+        }
     }
 
-    private void AddToTree(T key)
+    public BinaryTree()
     {
-        var node = _root;
-        while (true)
-        {
-            node.Count++;
-            var comparison = node.Key.CompareTo(key);
-            if (comparison > 0 && node.Left is null)
-            {
-                node.Left = new Node(key);
-                break;
-            }
-            else if (comparison > 0)
-                node = node.Left;
-            else if (comparison <= 0 && node.Right is null)
-            {
-                node.Right = new Node(key);
-                break;
-            }
-            else
-                node = node.Right;
-        }
+        
+    }
+
+    private BinaryTree(T key)
+    {
+        _key = key;
+        _hasKey = true;
+        _count = 1;
     }
 
     public bool Contains(T key)
     {
-        var node = _root;
-        while (true)
-        {
-            if (node is null)
-                return false;
-            var comparison = node.Key.CompareTo(key);
-            if (comparison > 0)
-                node = node.Left;
-            else if (comparison < 0)
-                node = node.Right;
-            else
-                return true;
-        }
-    }
-
-    private class Node
-    {
-        internal T Key;
-        internal Node Left;
-        internal Node Right;
-        internal int Count;
-
-        internal Node(T key)
-        {
-            Key = key;
-            Count = 1;
-        }
+        if (!_hasKey)
+            return false;
+        var comparison = _key.CompareTo(key);
+        if (comparison > 0)
+            return _left?.Contains(key) ?? false;
+        else if (comparison < 0)
+            return _right?.Contains(key) ?? false;
+        else
+            return true;
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return Enumerate(_root).GetEnumerator();
+        if (!_hasKey)
+            yield break;
+
+        if (_left is not null)
+            foreach (var key in _left)
+                yield return key;
+
+        yield return _key;
+
+        if (_right is not null)
+            foreach (var key in _right)
+                yield return key;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -81,47 +80,26 @@ public class BinaryTree<T> : IEnumerable<T> where T : IComparable
         return GetEnumerator();
     }
 
-    private IEnumerable<T> Enumerate(Node node)
-    {
-        if (node is null)
-            yield break;
-
-        foreach (var key in Enumerate(node.Left))
-            yield return key;
-
-        yield return node.Key;
-
-        foreach (var key in Enumerate(node.Right))
-            yield return key;
-    }
-
     public T this[int i]
     {
         get
         {
-            return GetNodeByIndex(i).Key;
+            return GetKeyByIndex(i);
         }
         private set => throw new NotImplementedException();
     }
 
-    private Node GetNodeByIndex(int i)
+    private T GetKeyByIndex(int i)
     {
-        if (i < 0 || i >= (_root?.Count ?? 0))
+        if (i < 0 || i >= _count)
             throw new IndexOutOfRangeException();
 
-        var node = _root;
-        while (true)
-        {
-            var leftCount = node.Left?.Count ?? 0;
-            if (i < leftCount)
-                node = node.Left;
-			else if (i > leftCount)
-			{
-				i -= leftCount + 1;
-                node = node.Right;
-			}
-			else
-				return node;
-        }
+        var leftCount = _left?._count ?? 0;
+        if (i < leftCount)
+            return _left[i];
+        else if (i > leftCount)
+            return _right[i - leftCount - 1];
+        else
+            return _key;
     }
 }
