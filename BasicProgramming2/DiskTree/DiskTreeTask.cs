@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DiskTree;
@@ -44,17 +45,16 @@ public class DiskTreeNode
             Nodes[name].AddNodes(input.Substring(position + 1));
     }
 
-    public IEnumerable<string> GetFormattedNodes(string prefix = "")
+    public IEnumerable<string> GetFormattedNodes(int prefixLength = -1)
     {
-        var nextPrefix = prefix;
-        if (!string.IsNullOrEmpty(Name))
+        if (prefixLength >= 0)
         {
+            var prefix = new string(' ', prefixLength);
             yield return prefix + Name;
-            nextPrefix = prefix + " ";
         }
         
         foreach (var node in Nodes.OrderBy(x => x.Key, StringComparer.Ordinal))
-            foreach (var str in node.Value.GetFormattedNodes(nextPrefix))
+            foreach (var str in node.Value.GetFormattedNodes(prefixLength + 1))
                 yield return str;
     }
 }
