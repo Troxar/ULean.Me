@@ -124,11 +124,9 @@ public static class ParameterInfoExtensions
         if (info is null || info.ParameterType == typeof(void))
             return null;
 
-        var description = new ApiParamDescription
-        {
-            Required = info.GetCustomAttribute<ApiRequiredAttribute>()
-                ?.Required ?? false
-        };
+        var description = new ApiParamDescription();
+        description.Required = info.GetCustomAttribute<ApiRequiredAttribute>()
+            ?.Required ?? false;
 
         if (!string.IsNullOrEmpty(info.Name))
             description.ParamDescription = new CommonDescription
@@ -139,11 +137,8 @@ public static class ParameterInfoExtensions
             };
 
         var intValidation = info.GetCustomAttribute<ApiIntValidationAttribute>();
-        if (intValidation is not null)
-        {
-            description.MinValue = intValidation.MinValue;
-            description.MaxValue = intValidation.MaxValue;
-        }
+        description.MinValue = intValidation?.MinValue;
+        description.MaxValue = intValidation?.MaxValue;
 
         return description;
     }
