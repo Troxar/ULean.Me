@@ -24,10 +24,19 @@ namespace MyPhotoshop
 			result.width=original.width;
 			result.height=original.height;
 			result.data = new Pixel[result.width, result.height];
-			
-			for (int x=0;x<result.width;x++)
-				for (int y=0;y<result.height;y++)
-                    result.data[x, y] = original.data[x, y] * parameters[0];
+
+			var parameter = parameters[0];
+			for (int x = 0; x < result.width; x++)
+				for (int y = 0; y < result.height; y++)
+				{
+					var originalPixel = original.data[x, y];
+					var resultPixel = new Pixel();
+                    resultPixel.Red = originalPixel.Red * parameter;
+                    resultPixel.Green = originalPixel.Green * parameter;
+                    resultPixel.Blue = originalPixel.Blue * parameter;
+                    result.data[x, y] = resultPixel;
+                }
+                    
             return result;
 		}
 	}
