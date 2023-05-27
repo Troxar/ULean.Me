@@ -25,16 +25,13 @@ namespace MyPhotoshop
             set { _blue = CheckChannelValue(nameof(Blue), value); }
         }
 
-        public Pixel()
+        public static implicit operator Pixel(Color color)
         {
-
-        }
-
-        public Pixel(Color color)
-        {
-            Red = color.R / 255f;
-            Green = color.G / 255f;
-            Blue = color.B / 255f;
+            var pixel = new Pixel();
+            pixel.Red = color.R / 255f;
+            pixel.Green = color.G / 255f;
+            pixel.Blue = color.B / 255f;
+            return pixel;
         }
 
         public static Pixel operator *(Pixel left, double right) => new Pixel
