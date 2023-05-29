@@ -35,15 +35,24 @@ namespace MyPhotoshop
 
         public static Pixel operator *(Pixel left, double right) => new Pixel
         {
-            Red = left.Red * right,
-            Green = left.Green * right,
-            Blue = left.Blue * right
+            Red = Trim(left.Red * right),
+            Green = Trim(left.Green * right),
+            Blue = Trim(left.Blue * right)
         };
+
+        public static Pixel operator *(double left, Pixel right) => right * left;
 
         private static double CheckChannelValue(string channel, double value)
         {
             if (value < 0 || value > 1)
                 throw new InvalidChannelValueException($"Wrong {channel} channel value {value} (the value must be between 0 and 1)");
+            return value;
+        }
+
+        private static double Trim(double value)
+        {
+            if (value < 0) return 0;
+            if (value > 1) return 1;
             return value;
         }
     }
