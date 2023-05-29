@@ -21,15 +21,12 @@ namespace MyPhotoshop
 			_width = width;
 			_height = height;
 			_data = new Pixel[width, height];
-
-			for (int x = 0; x < width; x++)
-				for (int y = 0; y < height; y++)
-					_data[x, y] = new Pixel();
 		}
 
-		public Pixel this[int height, int width]
+		public Pixel this[int width, int height]
 		{
-			get { return _data[height, width]; }
+			get { return _data[width, height]; }
+			set { _data[width, height] = value; }
 		}
 	}
 }

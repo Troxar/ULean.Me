@@ -2,7 +2,7 @@
 
 namespace MyPhotoshop
 {
-    public class Pixel
+    public struct Pixel
     {
         private double _red;
         public double Red
@@ -25,19 +25,26 @@ namespace MyPhotoshop
             set { _blue = CheckChannelValue(nameof(Blue), value); }
         }
 
+        public Pixel(Color color) : this()
+        {
+            const double rate = 255;
+            Red = color.R / rate;
+            Green = color.G / rate;
+            Blue = color.B / rate;
+        }
+
+        public static Pixel operator *(Pixel left, double right) => new Pixel
+        {
+            Red = left.Red * right,
+            Green = left.Green * right,
+            Blue = left.Blue * right
+        };
+
         private static double CheckChannelValue(string channel, double value)
         {
             if (value < 0 || value > 1)
                 throw new InvalidChannelValueException($"Wrong {channel} channel value {value} (the value must be between 0 and 1)");
             return value;
-        }
-
-        public void Fill(Color color)
-        {
-            double rate = 255f;
-            Red = color.R / rate;
-            Green = color.G / rate;
-            Blue = color.B / rate;
         }
     }
 }

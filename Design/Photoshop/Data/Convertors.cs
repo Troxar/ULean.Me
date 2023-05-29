@@ -10,7 +10,7 @@ namespace MyPhotoshop
 			var photo = new Photo(bmp.Width, bmp.Height);
 			for (int x = 0; x < bmp.Width; x++)
 				for (int y = 0; y < bmp.Height; y++)
-					photo[x, y].Fill(bmp.GetPixel(x, y));
+					photo[x, y] = new Pixel(bmp.GetPixel(x, y));
 			return photo;
 		}
 		

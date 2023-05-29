@@ -25,13 +25,7 @@ namespace MyPhotoshop
 
 			for (int x = 0; x < result.Width; x++)
 				for (int y = 0; y < result.Height; y++)
-				{
-					var originalPixel = original[x, y];
-					var resultPixel = result[x, y];
-                    resultPixel.Red = originalPixel.Red * parameter;
-                    resultPixel.Green = originalPixel.Green * parameter;
-                    resultPixel.Blue = originalPixel.Blue * parameter;
-                }
+					result[x, y] = original[x, y] * parameter;
             
             return result;
 		}
