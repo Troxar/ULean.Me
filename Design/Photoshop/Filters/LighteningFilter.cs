@@ -32,7 +32,7 @@ namespace MyPhotoshop
                     resultPixel.Green = originalPixel.Green * parameter;
                     resultPixel.Blue = originalPixel.Blue * parameter;
                 }
-                    
+            
             return result;
 		}
 	}

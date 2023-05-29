@@ -25,27 +25,19 @@ namespace MyPhotoshop
             set { _blue = CheckChannelValue(nameof(Blue), value); }
         }
 
-        public static implicit operator Pixel(Color color)
-        {
-            var pixel = new Pixel();
-            pixel.Red = color.R / 255f;
-            pixel.Green = color.G / 255f;
-            pixel.Blue = color.B / 255f;
-            return pixel;
-        }
-
-        public static Pixel operator *(Pixel left, double right) => new Pixel
-        {
-            Red = left.Red * right,
-            Green = left.Green * right,
-            Blue = left.Blue * right
-        };
-
         private static double CheckChannelValue(string channel, double value)
         {
             if (value < 0 || value > 1)
                 throw new InvalidChannelValueException($"Wrong {channel} channel value {value} (the value must be between 0 and 1)");
             return value;
+        }
+
+        public void Fill(Color color)
+        {
+            double rate = 255f;
+            Red = color.R / rate;
+            Green = color.G / rate;
+            Blue = color.B / rate;
         }
     }
 }

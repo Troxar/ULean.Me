@@ -30,7 +30,6 @@ namespace MyPhotoshop
 		public Pixel this[int height, int width]
 		{
 			get { return _data[height, width]; }
-			set { _data[height, width] = value; }
 		}
 	}
 }
