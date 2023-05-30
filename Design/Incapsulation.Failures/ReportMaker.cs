@@ -41,20 +41,11 @@ namespace Incapsulation.Failures
                 .ToList();
         }
 
-        private static Failure[] ToFailures(int[] deviceIds, Dictionary<int, Device> devices, int[] failureTypes, object[][] times)
+        private static Failure[] ToFailures(int[] deviceIds, 
+            Dictionary<int, Device> devices, int[] failureTypes, object[][] times)
         {
-            if (deviceIds is null) 
-                throw new ArgumentNullException(nameof(deviceIds));
-            if (failureTypes is null)
-                throw new ArgumentNullException(nameof(failureTypes));
-            if (times is null) 
-                throw new ArgumentNullException(nameof(times));
-            
-            if (failureTypes.Length != deviceIds.Length) 
-                throw new FormatException($"Invalid length: {nameof(failureTypes)}");
-            if (times.Length != deviceIds.Length)
-                throw new FormatException($"Invalid length: {nameof(times)}");
-            
+            CheckFailureTypes(failureTypes, deviceIds.Length);
+            CheckTimes(times, deviceIds.Length);
 
             var failures = new Failure[deviceIds.Length];
             for (int i = 0; i < failures.Length; i++)
@@ -69,6 +60,22 @@ namespace Incapsulation.Failures
             return failures;
         }
 
+        private static void CheckFailureTypes(int[] failureTypes, int expectedLength)
+        {
+            if (failureTypes is null)
+                throw new ArgumentNullException(nameof(failureTypes));
+            if (failureTypes.Length != expectedLength)
+                throw new FormatException($"Invalid length: {nameof(failureTypes)}");
+        }
+
+        private static void CheckTimes(object[][] times, int expectedLength)
+        {
+            if (times is null)
+                throw new ArgumentNullException(nameof(times));
+            if (times.Length != expectedLength)
+                throw new FormatException($"Invalid length: {nameof(times)}");
+        }
+        
         private static DateTime ToDate(object[] time)
         {
             if (time is null)
