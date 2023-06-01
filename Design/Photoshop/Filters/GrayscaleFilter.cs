@@ -20,15 +20,17 @@ namespace MyPhotoshop
             
             for (int x = 0; x < result.Width; x++)
                 for (int y = 0; y < result.Height; y++)
-                {
-                    var pixel = original[x, y];
-                    var shade = (pixel.Red
-                        + pixel.Green
-                        + pixel.Blue) / 3;
-                    result[x, y] = new Pixel(shade, shade, shade);
-                }
+                    result[x, y] = ProcessPixel(original[x, y], parameters);
 
             return result;
+        }
+
+        private Pixel ProcessPixel(Pixel original, double[] parameters)
+        {
+            var shade = (original.Red
+                        + original.Green
+                        + original.Blue) / 3;
+            return new Pixel(shade, shade, shade);
         }
     }
 }

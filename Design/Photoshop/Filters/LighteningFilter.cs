@@ -25,13 +25,17 @@ namespace MyPhotoshop
 		public Photo Process(Photo original, double[] parameters)
 		{
 			var result = new Photo(original.Width, original.Height);
-			var parameter = parameters[0];
-
+			
 			for (int x = 0; x < result.Width; x++)
 				for (int y = 0; y < result.Height; y++)
-					result[x, y] = original[x, y] * parameter;
-            
+                    result[x, y] = ProcessPixel(original[x, y], parameters);
+
             return result;
+		}
+
+		private Pixel ProcessPixel(Pixel original, double[] parameters)
+		{
+			return original * parameters[0];
 		}
 	}
 }
