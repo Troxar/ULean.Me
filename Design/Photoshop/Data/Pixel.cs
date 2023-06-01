@@ -33,6 +33,13 @@ namespace MyPhotoshop
             Blue = color.B / rate;
         }
 
+        public Pixel(double red, double green, double blue) : this()
+        {
+            Red = red;
+            Green = green;
+            Blue = blue;
+        }
+
         public static Pixel operator *(Pixel left, double right) => new Pixel
         {
             Red = Trim(left.Red * right),
