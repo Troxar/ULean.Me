@@ -36,14 +36,7 @@ namespace Inheritance.DataStructure
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int result = 1430287;
-                result = (7302013 * result) ^ _name?.GetHashCode() ?? base.GetHashCode();
-                result = (7302013 * result) ^ _type.GetHashCode();
-                result = (7302013 * result) ^ _topic.GetHashCode();
-                return result;
-            }
+            return (_name, _type, _topic).GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -65,14 +58,8 @@ namespace Inheritance.DataStructure
         {
             var other = obj as Category;
             if (other is null) return 1;
-
-            int nameComparison = string.Compare(_name, other._name);
-            if (nameComparison != 0) return nameComparison;
-
-            int typeComparison = _type.CompareTo(other._type);
-            if (typeComparison != 0) return typeComparison;
-
-            return _topic.CompareTo(other._topic);
+            return (_name, _type, _topic)
+                .CompareTo((other._name, other._type, other._topic));
         }
 
         public static bool operator <(Category left, Category right)
