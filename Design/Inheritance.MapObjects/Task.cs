@@ -1,87 +1,69 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Inheritance.MapObjects
 {
-    public class Dwelling
+    public abstract class MapObject
+    {
+        
+    }
+
+    public interface IHaveOwner
+    {
+        int Owner { get; set; }
+    }
+
+    public interface IHaveArmy
+    {
+        Army Army { get; set; }
+    }
+
+    public interface IHaveTreasure
+    {
+        Treasure Treasure { get; set; }
+    }
+
+    public class Dwelling : MapObject, IHaveOwner
     {
         public int Owner { get; set; }
     }
 
-    public class Mine
+    public class Mine : MapObject, IHaveOwner, IHaveArmy, IHaveTreasure
     {
         public int Owner { get; set; }
         public Army Army { get; set; }
         public Treasure Treasure { get; set; }
     }
 
-    public class Creeps
+    public class Creeps : MapObject, IHaveArmy, IHaveTreasure
     {
         public Army Army { get; set; }
         public Treasure Treasure { get; set; }
     }
 
-    public class Wolves
+    public class Wolves : MapObject, IHaveArmy
     {
         public Army Army { get; set; }
     }
 
-    public class ResourcePile
+    public class ResourcePile : MapObject, IHaveTreasure
     {
         public Treasure Treasure { get; set; }
     }
 
     public static class Interaction
     {
-        public static void Make(Player player, object mapObject)
+        public static void Make(Player player, MapObject mapObject)
         {
-            //Здесь и далее используйте следующий сокращенный синтаксис преобразования типа
-            if (mapObject is Dwelling dwellingObj)
-            {
-                //Он более короткий и позволяет не производить множественных преобразований таких, как
-                //((Dwelling)mapObject).Owner = player.Id;
-
-                //а сразу обращаться к объекту, если он является каким-то классом.
-                dwellingObj.Owner = player.Id;
-
-                return;
-            }
-
-            //Перед выполнение задания потренируйтесь и замените неправильное использование is ниже
-            if (mapObject is Mine)
-            {
-                if (player.CanBeat(((Mine)mapObject).Army))
-                {
-                    ((Mine)mapObject).Owner = player.Id;
-                    player.Consume(((Mine)mapObject).Treasure);
-                }
-                else player.Die();
-                return;
-            }
-
-            if (mapObject is Creeps)
-            {
-                if (player.CanBeat(((Creeps)mapObject).Army))
-                    player.Consume(((Creeps)mapObject).Treasure);
-                else
+            if (mapObject is IHaveArmy haveArmy)
+                if (!player.CanBeat(haveArmy.Army))
                     player.Die();
-                return;
-            }
 
-            if (mapObject is ResourcePile)
-            {
-                player.Consume(((ResourcePile)mapObject).Treasure);
+            if (player.Dead)
                 return;
-            }
 
-            if (mapObject is Wolves)
-            {
-                if (!player.CanBeat(((Wolves)mapObject).Army))
-                    player.Die();
-            }
+            if (mapObject is IHaveOwner haveOwner)
+                haveOwner.Owner = player.Id;
+
+            if (mapObject is IHaveTreasure haveTreasure)
+                player.Consume(haveTreasure.Treasure);
         }
     }
 }
