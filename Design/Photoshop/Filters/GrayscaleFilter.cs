@@ -2,16 +2,14 @@
 
 namespace MyPhotoshop
 {
-    public class GrayscaleFilter : PixelFilter
+    public class GrayscaleFilter : PixelFilter<GrayscaleParameters>
     {
-        public GrayscaleFilter() : base(new GrayscaleParameters()) { }
-
         public override string ToString()
         {
             return "Оттенки серого";
         }
 
-        public override Pixel ProcessPixel(Pixel original, IParameters parameters)
+        public override Pixel ProcessPixel(Pixel original, GrayscaleParameters parameters)
         {
             var shade = (original.Red
                         + original.Green
