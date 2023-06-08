@@ -1,58 +1,52 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Generics.Robots
 {
-    public abstract class RobotAI
+    public interface IRobotAI<out TCommand>
     {
-        public abstract object GetCommand();
+        TCommand GetCommand();
     }
 
-    public class ShooterAI : RobotAI
+    public class ShooterAI : IRobotAI<ShooterCommand>
     {
         int counter = 1;
 
-        public override object GetCommand()
+        public ShooterCommand GetCommand()
         {
             return ShooterCommand.ForCounter(counter++);
         }
     }
 
-    public class BuilderAI : RobotAI
+    public class BuilderAI : IRobotAI<BuilderCommand>
     {
         int counter = 1;
 
-        public override object GetCommand()
+        public BuilderCommand GetCommand()
         {
             return BuilderCommand.ForCounter(counter++);
         }
     }
 
-    public abstract class Device
+    public interface IDevice<in TCommand>
     {
-        public abstract string ExecuteCommand(object command);
+        string ExecuteCommand(TCommand command);
     }
 
-    public class Mover : Device
+    public class Mover : IDevice<IMoveCommand>
     {
-        public override string ExecuteCommand(object _command)
+        public string ExecuteCommand(IMoveCommand command)
         {
-            var command = _command as IMoveCommand;
             if (command == null)
                 throw new ArgumentException();
             return $"MOV {command.Destination.X}, {command.Destination.Y}";
         }
     }
 
-    public class ShooterMover : Device
+    public class ShooterMover : IDevice<IShooterMoveCommand>
     {
-        public override string ExecuteCommand(object _command)
+        public string ExecuteCommand(IShooterMoveCommand command)
         {
-            var command = _command as IShooterMoveCommand;
             if (command == null)
                 throw new ArgumentException();
             var hide = command.ShouldHide ? "YES" : "NO";
@@ -60,12 +54,12 @@ namespace Generics.Robots
         }
     }
 
-    public class Robot
+    public class Robot<TCommand>
     {
-        private readonly RobotAI ai;
-        private readonly Device device;
+        private readonly IRobotAI<TCommand> ai;
+        private readonly IDevice<TCommand> device;
 
-        public Robot(RobotAI ai, Device executor)
+        public Robot(IRobotAI<TCommand> ai, IDevice<TCommand> executor)
         {
             this.ai = ai;
             this.device = executor;
@@ -81,10 +75,13 @@ namespace Generics.Robots
                 yield return device.ExecuteCommand(command);
             }
         }
+    }
 
-        public static Robot Create<TCommand>(RobotAI ai, Device executor)
+    public static class Robot
+    {
+        public static Robot<TCommand> Create<TCommand>(IRobotAI<TCommand> ai, IDevice<TCommand> executor)
         {
-            return new Robot(ai, executor);
+            return new Robot<TCommand>(ai, executor);
         }
     }
 }
