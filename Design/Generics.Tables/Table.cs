@@ -9,7 +9,7 @@ namespace Generics.Tables
 
         public HashSet<TRow> Rows { get; }
         public HashSet<TColumn> Columns { get; }
-        public TableOpen<TRow, TColumn, TValue> Open { get; }
+        public Table<TRow, TColumn, TValue> Open { get => this; }
         public TableExisted<TRow, TColumn, TValue> Existed { get; }
 
         public Table()
@@ -18,7 +18,6 @@ namespace Generics.Tables
 
             Rows = new HashSet<TRow>();
             Columns = new HashSet<TColumn>();
-            Open = new TableOpen<TRow, TColumn, TValue>(this);
             Existed = new TableExisted<TRow, TColumn, TValue>(this);
         }
 
@@ -60,22 +59,6 @@ namespace Generics.Tables
                 Row = row;
                 Column = column;
             }
-        }
-    }
-
-    public class TableOpen<TRow, TColumn, TValue>
-    {
-        private readonly Table<TRow, TColumn, TValue> _table;
-
-        public TableOpen(Table<TRow, TColumn, TValue> table)
-        {
-            _table = table;
-        }
-
-        public TValue this[TRow row, TColumn column]
-        {
-            get => _table[row, column];
-            set => _table[row, column] = value;
         }
     }
 
