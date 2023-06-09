@@ -2,7 +2,7 @@
 
 namespace MyPhotoshop
 {
-    public class TransformParameters : IParameters
+    public class FlipParameters : IParameters
     {
         public ParameterInfo[] GetDescription()
         {
