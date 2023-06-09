@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MyPhotoshop
@@ -22,7 +23,15 @@ namespace MyPhotoshop
                     return new Pixel(shade, shade, shade);
                 }
 				));
-            Application.Run (window);
-		}
+            window.AddFilter(new TransformFilter(
+                "Отразить по горизонтали",
+                (size) => size,
+                (point, size) => new Point(size.Width - point.X - 1, point.Y)));
+            window.AddFilter(new TransformFilter(
+                "Поворот против часовой стрелки",
+                (size) => new Size(size.Height, size.Width),
+                (point, size) => new Point(size.Width - point.Y - 1, point.X)));
+            Application.Run(window);
+        }
 	}
 }
