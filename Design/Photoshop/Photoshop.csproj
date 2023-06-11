@@ -46,9 +46,12 @@
     <Compile Include="Filters\GrayscaleParameters.cs" />
     <Compile Include="Filters\IParameters.cs" />
     <Compile Include="Filters\Transform\FlipParameters.cs" />
+    <Compile Include="Filters\Transform\FlipTransformer.cs" />
+    <Compile Include="Filters\Transform\ITransformer.cs" />
     <Compile Include="Filters\Transform\RotationParameters.cs" />
     <Compile Include="Filters\LighteningParameters.cs" />
     <Compile Include="Filters\ParametrizedFilter.cs" />
+    <Compile Include="Filters\Transform\RotationTransformer.cs" />
     <Compile Include="Filters\Transform\TransformFilter.cs" />
     <Compile Include="Filters\PixelFilter.cs" />
     <Compile Include="Filters\ParameterInfo.cs" />
