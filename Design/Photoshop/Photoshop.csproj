@@ -43,7 +43,8 @@
   <ItemGroup>
     <Compile Include="Data\InvalidChannelValueException.cs" />
     <Compile Include="Data\Pixel.cs" />
-    <Compile Include="Filters\GrayscaleParameters.cs" />
+    <Compile Include="Filters\FreeTransformer.cs" />
+    <Compile Include="Filters\EmptyParameters.cs" />
     <Compile Include="Filters\IParameters.cs" />
     <Compile Include="Filters\Transform\FlipParameters.cs" />
     <Compile Include="Filters\Transform\FlipTransformer.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Filters\ParametrizedFilter.cs" />
     <Compile Include="Filters\Transform\RotationTransformer.cs" />
     <Compile Include="Filters\Transform\TransformFilter.cs" />
+    <Compile Include="Filters\Transform\TransformFilter%28TParameters%29.cs" />
     <Compile Include="Filters\PixelFilter.cs" />
     <Compile Include="Filters\ParameterInfo.cs" />
     <Compile Include="Main.cs" />
