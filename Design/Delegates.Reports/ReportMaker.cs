@@ -2,135 +2,140 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Delegates.Reports
 {
-	public abstract class ReportMaker
+	public class ReportMaker<TStatsResult>
 	{
-		protected abstract string MakeCaption(string caption);
-		protected abstract string BeginList();
-		protected abstract string MakeItem(string valueType, string entry);
-		protected abstract string EndList();
-		protected abstract object MakeStatistics(IEnumerable<double> data);
-		protected abstract string Caption { get; }
+        private readonly IStatisticsMaker<TStatsResult> _statsMaker;
+		private readonly IReporter _reporter;
+		
+		public ReportMaker(
+            IStatisticsMaker<TStatsResult> statsMaker,
+            IReporter reporter)
+		{
+            _statsMaker = statsMaker;
+			_reporter = reporter;
+		}
+
 		public string MakeReport(IEnumerable<Measurement> measurements)
 		{
-			var data = measurements.ToList();
-			var result = new StringBuilder();
-			result.Append(MakeCaption(Caption));
-			result.Append(BeginList());
-			result.Append(MakeItem("Temperature", MakeStatistics(data.Select(z => z.Temperature)).ToString()));
-			result.Append(MakeItem("Humidity", MakeStatistics(data.Select(z => z.Humidity)).ToString()));
-			result.Append(EndList());
+            var data = measurements.ToList();
+            var result = new StringBuilder();
+			result.Append(_reporter.MakeCaption(_statsMaker.Caption));
+			result.Append(_reporter.BeginList());
+			result.Append(_reporter.MakeItem("Temperature",
+                _statsMaker.MakeStatistics(data.Select(z => z.Temperature)).ToString()));
+			result.Append(_reporter.MakeItem("Humidity",
+                _statsMaker.MakeStatistics(data.Select(z => z.Humidity)).ToString()));
+			result.Append(_reporter.EndList());
 			return result.ToString();
-		}
-	}
-
-	public class MeanAndStdHtmlReportMaker : ReportMaker
-	{
-		protected override string Caption
-		{
-			get
-			{
-				return "Mean and Std";
-			}
-		}
-
-		protected override string MakeCaption(string caption)
-		{
-			return $"<h1>{caption}</h1>";
-		}
-
-		protected override string BeginList()
-		{
-			return "<ul>";
-		}
-
-		protected override string EndList()
-		{
-			return "</ul>";
-		}
-
-		protected override string MakeItem(string valueType, string entry)
-		{
-			return $"<li><b>{valueType}</b>: {entry}";
-		}
-
-		protected override object MakeStatistics(IEnumerable<double> _data)
-		{
-			var data = _data.ToList();
-			var mean = data.Average();
-			var std = Math.Sqrt(data.Select(z => Math.Pow(z - mean, 2)).Sum() / (data.Count - 1));
-
-			return new MeanAndStd
-			{
-				Mean = mean,
-				Std = std
-			};
-		}
-	}
-
-	public class MedianMarkdownReportMaker : ReportMaker
-	{
-		protected override string Caption
-		{
-			get
-			{
-				return "Median";
-			}
-		}
-
-		protected override string BeginList()
-		{
-			return "";
-		}
-
-		protected override string EndList()
-		{
-			return "";
-		}
-
-		protected override string MakeCaption(string caption)
-		{
-			return $"## {caption}\n\n";
-		}
-
-		protected override string MakeItem(string valueType, string entry)
-		{
-			return $" * **{valueType}**: {entry}\n\n";
-		}
-
-		protected override object MakeStatistics(IEnumerable<double> data)
-		{
-			var list = data.OrderBy(z => z).ToList();
-			if (list.Count % 2 == 0)
-				return (list[list.Count / 2] + list[list.Count / 2 - 1]) / 2;
-			
-			return list[list.Count / 2];
 		}
 	}
 
 	public static class ReportMakerHelper
 	{
-		public static string MeanAndStdHtmlReport(IEnumerable<Measurement> data)
+		private static string MakeReport<TStatsResult>(
+            IStatisticsMaker<TStatsResult> statsMaker,
+            IReporter reporter,
+            IEnumerable<Measurement> data)
 		{
-			return new MeanAndStdHtmlReportMaker().MakeReport(data);
+			return new ReportMaker<TStatsResult>(
+                statsMaker,
+                reporter).MakeReport(data);
 		}
 
-		public static string MedianMarkdownReport(IEnumerable<Measurement> data)
+        public static string MeanAndStdHtmlReport(IEnumerable<Measurement> measurements)
 		{
-			return new MedianMarkdownReportMaker().MakeReport(data);
+            return MakeReport(
+                new MeanAndStdStatisticsMaker(),
+                new HtmlReporter(),
+                measurements);
 		}
+
+		public static string MedianMarkdownReport(IEnumerable<Measurement> measurements)
+		{
+            return MakeReport(
+                new MedianStatisticsMaker(),
+                new MarkdownReporter(),
+                measurements);
+        }
 
 		public static string MeanAndStdMarkdownReport(IEnumerable<Measurement> measurements)
 		{
-			throw new NotImplementedException();
-		}
+            return MakeReport(
+                new MeanAndStdStatisticsMaker(),
+                new MarkdownReporter(),
+                measurements);
+        }
 
 		public static string MedianHtmlReport(IEnumerable<Measurement> measurements)
 		{
-			throw new NotImplementedException();
-		}
+            return MakeReport(
+                new MedianStatisticsMaker(),
+                new HtmlReporter(),
+                measurements);
+        }
 	}
+
+	public interface IStatisticsMaker<TResult>
+	{
+        string Caption { get; }
+        TResult MakeStatistics(IEnumerable<double> data);
+    }
+
+    public class MeanAndStdStatisticsMaker : IStatisticsMaker<MeanAndStd>
+    {
+        public string Caption => "Mean and Std";
+
+        public MeanAndStd MakeStatistics(IEnumerable<double> data)
+        {
+            var list = data.ToList();
+            var mean = list.Average();
+            var std = Math.Sqrt(list.Select(z => Math.Pow(z - mean, 2)).Sum() / (list.Count - 1));
+
+            return new MeanAndStd
+            {
+                Mean = mean,
+                Std = std
+            };
+        }
+    }
+
+    public class MedianStatisticsMaker : IStatisticsMaker<double>
+    {
+        public string Caption => "Median";
+
+        public double MakeStatistics(IEnumerable<double> data)
+        {
+            var list = data.OrderBy(z => z).ToList();
+            if (list.Count % 2 == 0)
+                return (list[list.Count / 2] + list[list.Count / 2 - 1]) / 2;
+            return list[list.Count / 2];
+        }
+    }
+
+	public interface IReporter
+    {
+        string MakeCaption(string caption);
+        string BeginList();
+        string MakeItem(string valueType, string entry);
+        string EndList();
+    }
+
+    public class HtmlReporter : IReporter
+    {
+        public string BeginList() => "<ul>";
+        public string EndList() => "</ul>";
+        public string MakeCaption(string caption) => $"<h1>{caption}</h1>";
+        public string MakeItem(string valueType, string entry) => $"<li><b>{valueType}</b>: {entry}";
+    }
+
+    public class MarkdownReporter : IReporter
+    {
+        public string BeginList() => string.Empty;
+        public string EndList() => string.Empty;
+        public string MakeCaption(string caption) => $"## {caption}\n\n";
+        public string MakeItem(string valueType, string entry) => $" * **{valueType}**: {entry}\n\n";
+    }
 }
