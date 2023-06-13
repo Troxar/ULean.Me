@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Delegates.Observers
 {
-
-	public class StackOperationsLogger
+    public class StackOperationsLogger
 	{
-		private readonly Observer observer = new Observer();
-		public void SubscribeOn<T>(ObservableStack<T> stack)
+        private readonly IObserver observer = new Observer();
+        
+        public void SubscribeOn<T>(ObservableStack<T> stack)
 		{
-			stack.Add(observer);
+			stack.Notify += observer.HandleEvent;
 		}
 
-		public string GetLog()
+        public string GetLog()
 		{
 			return observer.Log.ToString();
 		}
@@ -24,53 +21,31 @@ namespace Delegates.Observers
 
 	public interface IObserver
 	{
-		void HandleEvent(object eventData);
+		string Log { get; }
+        void HandleEvent(object eventData);
 	}
 
 	public class Observer : IObserver
 	{
-		public StringBuilder Log = new StringBuilder();
+		private readonly StringBuilder _sb = new StringBuilder();
+        public string Log => _sb.ToString();
 
 		public void HandleEvent(object eventData)
 		{
-			Log.Append(eventData);
+			_sb.Append(eventData);
 		}
 	}
 
-	public interface IObservable
-	{
-		void Add(IObserver observer);
-		void Remove(IObserver observer);
-		void Notify(object eventData);
-	}
+    public class ObservableStack<T>
+    {
+		public event Action<StackEventData<T>> Notify;
 
-
-	public class ObservableStack<T> : IObservable
-	{
-		List<IObserver> observers = new List<IObserver>();
-
-		public void Add(IObserver observer)
-		{
-			observers.Add(observer);
-		}
-
-		public void Notify(object eventData)
-		{
-			foreach (var observer in observers)
-				observer.HandleEvent(eventData);
-		}
-
-		public void Remove(IObserver observer)
-		{
-			observers.Remove(observer);
-		}
-
-		List<T> data = new List<T>();
+		private readonly List<T> data = new List<T>();
 
 		public void Push(T obj)
 		{
 			data.Add(obj);
-			Notify(new StackEventData<T> { IsPushed = true, Value = obj });
+			Notify?.Invoke(new StackEventData<T> { IsPushed = true, Value = obj });
 		}
 
 		public T Pop()
@@ -78,11 +53,8 @@ namespace Delegates.Observers
 			if (data.Count == 0)
 				throw new InvalidOperationException();
 			var result = data[data.Count - 1];
-			Notify(new StackEventData<T> { IsPushed = false, Value = result });
+			Notify?.Invoke(new StackEventData<T> { IsPushed = false, Value = result });
 			return result;
-
 		}
 	}
-
-
 }
