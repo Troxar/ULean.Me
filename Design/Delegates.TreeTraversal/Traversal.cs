@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Delegates.TreeTraversal
 {
@@ -7,17 +8,20 @@ namespace Delegates.TreeTraversal
     {
         public static IEnumerable<Product> GetProducts(ProductCategory root)
         {
-            return Traverse(
+            return Traverse<ProductCategory, IEnumerable<Product>>(
                 root,
+                node => node.Products != null && node.Products.Count > 0,
                 node => node.Products,
-                node => node.Categories);
+                node => node.Categories)
+                .SelectMany(x => x);
         }
 
         public static IEnumerable<Job> GetEndJobs(Job root)
         {
             return Traverse(
                 root,
-                node => node.Subjobs is null || node.Subjobs.Count == 0 ? new[] { node } : Array.Empty<Job>(),
+                node => node.Subjobs != null && node.Subjobs.Count == 0,
+                node => node,
                 node => node.Subjobs);
         }
 
@@ -25,22 +29,26 @@ namespace Delegates.TreeTraversal
         {
             return Traverse(
                 root,
-                node => node.Left is null && node.Right is null ? new[] { node.Value } : Array.Empty<T>(),
+                node => node.Left is null && node.Right is null,
+                node => node.Value,
                 node => new[] { node.Left, node.Right });
         }
 
         private static IEnumerable<TResult> Traverse<TNode, TResult>(
             TNode node,
-            Func<TNode, IEnumerable<TResult>> getCurrent,
-            Func<TNode, IEnumerable<TNode>> getChildren)
+            Func<TNode, bool> resultFilter,
+            Func<TNode, TResult> resultSelector,
+            Func<TNode, IEnumerable<TNode>> childrenSelector)
         {
             if (node == null)
                 yield break;
-            foreach (TResult result in getCurrent(node))
-                yield return result;
 
-            foreach (TNode child in getChildren(node))
-                foreach (TResult result in Traverse(child, getCurrent, getChildren))
+            if (resultFilter(node))
+                yield return resultSelector(node);
+
+            foreach (TNode child in childrenSelector(node))
+                foreach (TResult result in Traverse(child, resultFilter,
+                    resultSelector, childrenSelector))
                     yield return result;
         }
     }
