@@ -19,7 +19,7 @@ namespace Delegates.PairsAnalysis
             return data
                 .Pairs()
                 .ProcessItems(pair => (pair.Item2 - pair.Item1) / pair.Item1)
-                .AverageDifference();
+                .Average();
         }
     }
 
@@ -71,11 +71,6 @@ namespace Delegates.PairsAnalysis
         {
             foreach (TSource value in source)
                 yield return processor(value);
-        }
-
-        public static double AverageDifference(this IEnumerable<double> source)
-        {
-            return source.Average();
         }
     }
 }
