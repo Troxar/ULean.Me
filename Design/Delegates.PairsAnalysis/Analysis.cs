@@ -10,16 +10,14 @@ namespace Delegates.PairsAnalysis
         {
             return data
                 .Pairs()
-                .ProcessItems(pair => (pair.Item2 - pair.Item1).TotalSeconds)
-                .MaxIndex();
+                .MaxIndex(x => (x.Item2 - x.Item1).TotalSeconds);
         }
 
         public static double FindAverageRelativeDifference(params double[] data)
         {
             return data
                 .Pairs()
-                .ProcessItems(pair => (pair.Item2 - pair.Item1) / pair.Item1)
-                .Average();
+                .Average(x => (x.Item2 - x.Item1) / x.Item1);
         }
     }
 
@@ -42,15 +40,18 @@ namespace Delegates.PairsAnalysis
                 throw new InvalidOperationException("Not enough items in collection");
         }
 
-        public static int MaxIndex<T>(this IEnumerable<T> source)
-            where T : IComparable
+        public static int MaxIndex<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TResult> selector)
+                where TResult : IComparable
         {
-            T max = default;
+            TResult max = default;
             int bestIndex = 0;
             int counter = 0;
 
-            foreach (T value in source)
+            foreach (TSource pair in source)
             {
+                TResult value = selector(pair);
                 if (counter == 0 || value.CompareTo(max) > 0)
                 {
                     max = value;
@@ -65,12 +66,11 @@ namespace Delegates.PairsAnalysis
             return bestIndex;
         }
 
-        public static IEnumerable<TResult> ProcessItems<TSource, TResult>(
-            this IEnumerable<TSource> source,
-            Func<TSource, TResult> processor)
+        // required only for successful compilation on the site
+        public static int MaxIndex<T>(this IEnumerable<T> source)
+            where T : IComparable
         {
-            foreach (TSource value in source)
-                yield return processor(value);
+            return source.MaxIndex(x => x);
         }
     }
 }
