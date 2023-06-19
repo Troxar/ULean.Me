@@ -49,7 +49,8 @@
     <Compile Include="Filters\FreeTransformer.cs" />
     <Compile Include="Filters\EmptyParameters.cs" />
     <Compile Include="Filters\Parameters\IParameters.cs" />
-    <Compile Include="Filters\Parameters\ParametersExtensions.cs" />
+    <Compile Include="Filters\Parameters\IParametersHandler.cs" />
+    <Compile Include="Filters\Parameters\SimpleParametersHandler.cs" />
     <Compile Include="Filters\Transform\FlipParameters.cs" />
     <Compile Include="Filters\Transform\FlipTransformer.cs" />
     <Compile Include="Filters\Transform\ITransformer.cs" />
