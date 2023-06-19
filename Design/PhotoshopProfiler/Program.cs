@@ -5,7 +5,7 @@ namespace Profiler
 {
     internal class Program
     {
-        private static void Test(Func<double[], IParameters> method, int count)
+        private static void Test(Func<double[], IParameters> method, int count, string description)
         {
             var args = new double[] { 0 };
             method(args);
@@ -18,15 +18,19 @@ namespace Profiler
 
             sw.Stop();
 
-            Console.WriteLine(sw.ElapsedMilliseconds * 1000d / count);
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine($"{description}: {sw.ElapsedMilliseconds * 1000d / count} µs");
         }
 
         public static void Main(string[] args)
         {
             var simpleHandler = new SimpleParametersHandler<LighteningParameters>();
+            var staticHandler = new StaticParametersHandler<LighteningParameters>();
+
             int count = 100000;
-            Test(values => simpleHandler.CreateParameters(values), count);
-            Test(values => new LighteningParameters { Coefficient = values[0] }, count);
+            Test(values => new LighteningParameters { Coefficient = values[0] }, count, "Direct assignment: ");
+            Test(values => simpleHandler.CreateParameters(values), count, "Simple handler");
+            Test(values => staticHandler.CreateParameters(values), count, "Static handler");
         }
     }
 }
