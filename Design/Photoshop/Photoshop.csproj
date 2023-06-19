@@ -50,6 +50,7 @@
     <Compile Include="Filters\EmptyParameters.cs" />
     <Compile Include="Filters\Parameters\IParameters.cs" />
     <Compile Include="Filters\Parameters\IParametersHandler.cs" />
+    <Compile Include="Filters\Parameters\ExpressionsParametersHandler.cs" />
     <Compile Include="Filters\Parameters\StaticParametersHandler.cs" />
     <Compile Include="Filters\Parameters\SimpleParametersHandler.cs" />
     <Compile Include="Filters\Transform\FlipParameters.cs" />

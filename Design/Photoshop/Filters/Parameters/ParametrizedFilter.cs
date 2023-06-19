@@ -3,7 +3,7 @@
     public abstract class ParametrizedFilter<TParameters> : IFilter
         where TParameters : IParameters, new()
     {
-        private IParametersHandler<TParameters> _handler = new SimpleParametersHandler<TParameters>();
+        private IParametersHandler<TParameters> _handler = new ExpressionsParametersHandler<TParameters>();
 
         public ParameterInfo[] GetParameters()
         {

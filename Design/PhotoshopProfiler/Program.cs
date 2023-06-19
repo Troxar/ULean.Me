@@ -26,11 +26,13 @@ namespace Profiler
         {
             var simpleHandler = new SimpleParametersHandler<LighteningParameters>();
             var staticHandler = new StaticParametersHandler<LighteningParameters>();
+            var expressionsHandler = new ExpressionsParametersHandler<LighteningParameters>();
 
             int count = 100000;
             Test(values => new LighteningParameters { Coefficient = values[0] }, count, "Direct assignment: ");
             Test(values => simpleHandler.CreateParameters(values), count, "Simple handler");
             Test(values => staticHandler.CreateParameters(values), count, "Static handler");
+            Test(values => expressionsHandler.CreateParameters(values), count, "Expressions handler");
         }
     }
 }
