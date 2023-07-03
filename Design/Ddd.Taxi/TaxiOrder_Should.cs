@@ -161,5 +161,69 @@ namespace Ddd.Taxi.Domain
 			var ex = Assert.Throws<InvalidOperationException>(() => taxiApi.UnassignDriver(order));
 			StringAssert.Contains("WaitingForDriver", ex.Message, "Message should contain some usefull information for debugging purpose (at least current order status)");
 		}
-	}
+
+        [Test]
+        public void DriverClassShouldBeEntity()
+        {
+			Type driverType = typeof(Driver);
+            Assert.AreEqual(
+                typeof(Entity<int>),
+				driverType.BaseType,
+                driverType.Name + " should inherit Entity<int>");
+        }
+
+		[Test]
+		public void DriverClassShouldHaveCarProperty()
+		{
+            Type driverType = typeof(Driver);
+            driverType.AssertHasPropertyOrField("Car", nameof(Car));
+        }
+
+		[Test]
+		public void NotAllowed_AssignDriver_AfterDriverAlreadyAssigned()
+		{
+            var taxiApi = CreateApi();
+            time = new DateTime(2017, 1, 1);
+            var order = taxiApi.CreateOrderWithoutDestination("John", "Doe", "Street1", "building1");
+            time = new DateTime(2017, 1, 2);
+			taxiApi.AssignDriver(order, 15);
+            Assert.Throws<InvalidOperationException>(() => taxiApi.AssignDriver(order, 15));
+        }
+
+		[Test]
+		public void NotAllowed_CancelAndUnassignDriver_AfterStartRide()
+		{
+            var taxiApi = CreateApi();
+            time = new DateTime(2017, 1, 1);
+            var order = taxiApi.CreateOrderWithoutDestination("John", "Doe", "Street1", "building1");
+            time = new DateTime(2017, 1, 2);
+            taxiApi.AssignDriver(order, 15);
+            taxiApi.StartRide(order);
+            Assert.Throws<InvalidOperationException>(() => taxiApi.Cancel(order));
+            Assert.Throws<InvalidOperationException>(() => taxiApi.UnassignDriver(order));
+        }
+
+		[Test]
+        public void NotAllowed_FinishRide_BeforeStartRide()
+		{
+            var taxiApi = CreateApi();
+            time = new DateTime(2017, 1, 1);
+            var order = taxiApi.CreateOrderWithoutDestination("John", "Doe", "Street1", "building1");
+            time = new DateTime(2017, 1, 2);
+            taxiApi.AssignDriver(order, 15);
+            Assert.Throws<InvalidOperationException>(() => taxiApi.FinishRide(order));
+        }
+
+        [Test]
+        public void NotAllowed_StartFinishAndUnassignDriver_BeforeDriverAssigned()
+        {
+            var taxiApi = CreateApi();
+            time = new DateTime(2017, 1, 1);
+            var order = taxiApi.CreateOrderWithoutDestination("John", "Doe", "Street1", "building1");
+            time = new DateTime(2017, 1, 2);
+            Assert.Throws<InvalidOperationException>(() => taxiApi.StartRide(order));
+            Assert.Throws<InvalidOperationException>(() => taxiApi.FinishRide(order));
+            Assert.Throws<InvalidOperationException>(() => taxiApi.UnassignDriver(order));
+        }
+    }
 }
