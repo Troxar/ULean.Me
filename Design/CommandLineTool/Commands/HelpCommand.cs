@@ -1,12 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace CommandLineTool.Commands
 {
-    public static class HelpCommand
+    public class HelpCommand : ConsoleCommand
     {
-        public static void Execute(TextWriter writer)
+        private readonly Func<IEnumerable<string>> _getCommands;
+
+        public HelpCommand(Func<IEnumerable<string>> getCommands)
+            : base("h", "h - prints available commands list")
         {
-            writer.WriteLine("Available commands: timer, printtime, help, h");
+            _getCommands = getCommands;
+        }
+        
+        public override void Execute(string[] args, TextWriter writer)
+        {
+            writer.WriteLine("Available commands: " + string.Join(", ", _getCommands()));
         }
     }
 }

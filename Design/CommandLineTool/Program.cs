@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandLineTool.Executor;
+using System;
 
 namespace CommandLineTool
 {
@@ -6,19 +7,20 @@ namespace CommandLineTool
     {
         public static void Main(string[] args)
         {
+            var executor = CommandsExecutorBuilder.Build(Console.Out);
             if (args.Length > 0)
-                CommandExecutor.RunCommand(args);
+                executor.Execute(args);
             else
-                RunInteractiveMode();
+                RunInteractiveMode(executor);
         }
 
-        public static void RunInteractiveMode()
+        public static void RunInteractiveMode(ICommandsExecutor executor)
         {
             while (true)
             {
                 var line = Console.ReadLine();
                 if (line == null || line == "exit") return;
-                CommandExecutor.RunCommand(line.Split(' '));
+                executor.Execute(line.Split(' '));
             }
         }
     }   

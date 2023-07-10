@@ -3,9 +3,12 @@ using System.IO;
 
 namespace CommandLineTool.Commands
 {
-    public static class PrintTimeCommand
+    public class PrintTimeCommand : ConsoleCommand
     {
-        public static void Execute(TextWriter writer)
+        public PrintTimeCommand()
+            : base("printtime", "printtime — prints current time") { }
+
+        public override void Execute(string[] args, TextWriter writer)
         {
             writer.WriteLine(DateTime.Now);
         }
