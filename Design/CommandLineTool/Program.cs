@@ -1,5 +1,4 @@
-﻿using CommandLineTool.Executor;
-using System;
+﻿using System;
 
 namespace CommandLineTool
 {
@@ -7,7 +6,8 @@ namespace CommandLineTool
     {
         public static void Main(string[] args)
         {
-            var executor = CommandsExecutorBuilder.Build(Console.Out);
+            var locator = ServiceLocator.Create();
+            var executor = locator.Get<ICommandsExecutor>();
             if (args.Length > 0)
                 executor.Execute(args);
             else

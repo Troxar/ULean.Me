@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using System.Linq;
 
-namespace CommandLineTool.Commands
+namespace CommandLineTool
 {
     public class HelpCommand : ConsoleCommand
     {
-        private readonly Func<IEnumerable<string>> _getCommands;
-
-        public HelpCommand(Func<IEnumerable<string>> getCommands)
-            : base("h", "h - prints available commands list")
-        {
-            _getCommands = getCommands;
-        }
+        public HelpCommand(IServiceLocator locator)
+            : base("h", "h - prints available commands list", locator) { }
         
-        public override void Execute(string[] args, TextWriter writer)
+        public override void Execute(string[] args)
         {
-            writer.WriteLine("Available commands: " + string.Join(", ", _getCommands()));
+            var writer = _locator.Get<TextWriter>();
+            var executor = _locator.Get<ICommandsExecutor>();
+            var names = executor.GetAvailableCommands().Select(command => command.Name);
+            writer.WriteLine("Available commands: " + string.Join(", ", names));
         }
     }
 }

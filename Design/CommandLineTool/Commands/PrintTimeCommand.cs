@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
 
-namespace CommandLineTool.Commands
+namespace CommandLineTool
 {
     public class PrintTimeCommand : ConsoleCommand
     {
-        public PrintTimeCommand()
-            : base("printtime", "printtime — prints current time") { }
+        public PrintTimeCommand(IServiceLocator locator)
+            : base("printtime", "printtime — prints current time", locator) { }
 
-        public override void Execute(string[] args, TextWriter writer)
+        public override void Execute(string[] args)
         {
+            var writer = _locator.Get<TextWriter>();
             writer.WriteLine(DateTime.Now);
         }
     }

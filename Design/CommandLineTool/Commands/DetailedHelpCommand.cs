@@ -1,22 +1,18 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
-namespace CommandLineTool.Commands
+namespace CommandLineTool
 {
     public class DetailedHelpCommand : ConsoleCommand
     {
-        private readonly Func<string, ConsoleCommand> _getCommand;
+        public DetailedHelpCommand(IServiceLocator locator)
+            : base("help", "help <command> — prints help for <command>", locator) { }
 
-        public DetailedHelpCommand(Func<string, ConsoleCommand> getCommand)
-            : base("help", "help <command> — prints help for <command>")
+        public override void Execute(string[] args)
         {
-            _getCommand = getCommand;
-        }
-
-        public override void Execute(string[] args, TextWriter writer)
-        {
+            var writer = _locator.Get<TextWriter>();
+            var executor = _locator.Get<ICommandsExecutor>();
             var commandName = args[1];
-            var command = _getCommand(commandName);
+            var command = executor.FindCommandByName(commandName);
             if (command is null)
                 writer.WriteLine("Command not found: " + commandName);
             else

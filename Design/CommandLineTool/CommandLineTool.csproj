@@ -43,13 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandsExecutorBuilder.cs" />
-    <Compile Include="Executor\CommandsExecutor.cs" />
-    <Compile Include="Executor\ICommandsExecutor.cs" />
+    <Compile Include="CommandsExecutor\CommandsExecutor.cs" />
+    <Compile Include="CommandsExecutor\ICommandsExecutor.cs" />
     <Compile Include="Commands\DetailedHelpCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PrintTimeCommand.cs" />
     <Compile Include="Commands\ConsoleCommand.cs" />
+    <Compile Include="ServiceLocator\IServiceLocator.cs" />
+    <Compile Include="ServiceLocator\ServiceLocator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\TimerCommand.cs" />
