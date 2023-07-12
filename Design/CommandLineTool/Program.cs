@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Ninject;
+using System;
+using System.IO;
 
 namespace CommandLineTool
 {
@@ -6,8 +8,8 @@ namespace CommandLineTool
     {
         public static void Main(string[] args)
         {
-            var locator = ServiceLocator.Create();
-            var executor = locator.Get<ICommandsExecutor>();
+            var container = GetDIContainer();
+            var executor = container.Get<ICommandsExecutor>();
             if (args.Length > 0)
                 executor.Execute(args);
             else
@@ -23,5 +25,18 @@ namespace CommandLineTool
                 executor.Execute(line.Split(' '));
             }
         }
-    }   
+
+        private static StandardKernel GetDIContainer()
+        {
+            var kernel = new StandardKernel();
+            kernel.Bind<TextWriter>().ToConstant(Console.Out);
+            kernel.Bind<ICommandsExecutor>().To<CommandsExecutor>().InSingletonScope();
+            kernel.Bind<ConsoleCommand>().To<DetailedHelpCommand>().InSingletonScope();
+            kernel.Bind<ConsoleCommand>().To<HelpCommand>().InSingletonScope();
+            kernel.Bind<ConsoleCommand>().To<PrintTimeCommand>().InSingletonScope();
+            kernel.Bind<ConsoleCommand>().To<TimerCommand>().InSingletonScope();
+
+            return kernel;
+        }
+    }
 }

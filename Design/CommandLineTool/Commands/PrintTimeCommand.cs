@@ -5,13 +5,16 @@ namespace CommandLineTool
 {
     public class PrintTimeCommand : ConsoleCommand
     {
-        public PrintTimeCommand(IServiceLocator locator)
-            : base("printtime", "printtime — prints current time", locator) { }
+        private readonly TextWriter _writer;
+        public PrintTimeCommand(TextWriter writer)
+            : base("printtime", "printtime — prints current time")
+        {
+            _writer = writer;
+        }
 
         public override void Execute(string[] args)
         {
-            var writer = _locator.Get<TextWriter>();
-            writer.WriteLine(DateTime.Now);
+            _writer.WriteLine(DateTime.Now);
         }
     }
 }
