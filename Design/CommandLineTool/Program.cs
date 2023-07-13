@@ -1,4 +1,5 @@
 ﻿using Ninject;
+using Ninject.Extensions.Conventions;
 using System;
 using System.IO;
 
@@ -37,12 +38,9 @@ namespace CommandLineTool
                 .WhenInjectedInto<CommandsExecutor>()
                 .InSingletonScope()
                 .WithConstructorArgument(ConsoleColor.Red);
-            kernel.Bind<ICommandsExecutor>().To<CommandsExecutor>().InSingletonScope();
-            kernel.Bind<ConsoleCommand>().To<DetailedHelpCommand>().InSingletonScope();
-            kernel.Bind<ConsoleCommand>().To<HelpCommand>().InSingletonScope();
-            kernel.Bind<ConsoleCommand>().To<PrintTimeCommand>().InSingletonScope();
-            kernel.Bind<ConsoleCommand>().To<TimerCommand>().InSingletonScope();
-
+            kernel.Bind(config => config.FromThisAssembly().SelectAllClasses().BindAllBaseClasses());
+            kernel.Bind(config => config.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
+            
             return kernel;
         }
     }
