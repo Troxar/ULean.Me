@@ -29,7 +29,14 @@ namespace CommandLineTool
         private static StandardKernel GetDIContainer()
         {
             var kernel = new StandardKernel();
-            kernel.Bind<TextWriter>().ToConstant(Console.Out);
+            kernel.Bind<TextWriter>().To<PromptConsoleWriter>()
+                .WhenInjectedInto<ConsoleCommand>()
+                .InSingletonScope()
+                .WithConstructorArgument("prompt", "> ");
+            kernel.Bind<TextWriter>().To<ColorTextConsoleWriter>()
+                .WhenInjectedInto<CommandsExecutor>()
+                .InSingletonScope()
+                .WithConstructorArgument(ConsoleColor.Red);
             kernel.Bind<ICommandsExecutor>().To<CommandsExecutor>().InSingletonScope();
             kernel.Bind<ConsoleCommand>().To<DetailedHelpCommand>().InSingletonScope();
             kernel.Bind<ConsoleCommand>().To<HelpCommand>().InSingletonScope();
