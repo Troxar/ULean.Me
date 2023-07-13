@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="CommandsExecutor\CommandsExecutor.cs" />
     <Compile Include="CommandsExecutor\ICommandsExecutor.cs" />
+    <Compile Include="CommandsNinjectModule.cs" />
     <Compile Include="Commands\DetailedHelpCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PrintTimeCommand.cs" />

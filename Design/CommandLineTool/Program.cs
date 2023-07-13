@@ -1,7 +1,5 @@
 ﻿using Ninject;
-using Ninject.Extensions.Conventions;
 using System;
-using System.IO;
 
 namespace CommandLineTool
 {
@@ -9,8 +7,7 @@ namespace CommandLineTool
     {
         public static void Main(string[] args)
         {
-            var container = GetDIContainer();
-            var executor = container.Get<ICommandsExecutor>();
+            var executor = CreateExecutor();
             if (args.Length > 0)
                 executor.Execute(args);
             else
@@ -27,21 +24,10 @@ namespace CommandLineTool
             }
         }
 
-        private static StandardKernel GetDIContainer()
+        private static ICommandsExecutor CreateExecutor()
         {
-            var kernel = new StandardKernel();
-            kernel.Bind<TextWriter>().To<PromptConsoleWriter>()
-                .WhenInjectedInto<ConsoleCommand>()
-                .InSingletonScope()
-                .WithConstructorArgument("prompt", "> ");
-            kernel.Bind<TextWriter>().To<ColorTextConsoleWriter>()
-                .WhenInjectedInto<CommandsExecutor>()
-                .InSingletonScope()
-                .WithConstructorArgument(ConsoleColor.Red);
-            kernel.Bind(config => config.FromThisAssembly().SelectAllClasses().BindAllBaseClasses());
-            kernel.Bind(config => config.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
-            
-            return kernel;
+            var container = new StandardKernel(new CommandsNinjectModule());
+            return container.Get<ICommandsExecutor>();
         }
     }
 }
