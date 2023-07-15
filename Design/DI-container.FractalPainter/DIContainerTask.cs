@@ -124,14 +124,20 @@ namespace FractalPainting.App
 
     public class KochFractalAction : IUiAction
     {
+        private readonly Lazy<KochPainter> _painter;
+
         public MenuCategory Category => MenuCategory.Fractals;
         public string Name => "Кривая Коха";
         public string Description => "Кривая Коха";
 
+        public KochFractalAction(Lazy<KochPainter> painter)
+        {
+            _painter = painter;
+        }
+
         public void Perform()
         {
-            var painter = new KochPainter(Services.GetImageHolder(), Services.GetPalette());
-            painter.Paint();
+            _painter.Value.Paint();
         }
     }
 
