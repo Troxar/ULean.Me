@@ -26,3 +26,11 @@ DI-контейнер — очень мощный инструмент в бол
 3.	Исправляем DragonFractalAction:
 	-	Избавьтесь от использования класса Services в DragonFractalAction.
 	-	Убедитесь, что все работает.
+4.	Ребиндим IImageHolder, PictureBoxImageHolder и Palette:
+	-	Перебиндите IImageHolder, PictureBoxImageHolder и Palette, так чтобы контейнер их создавал сам не обращаясь к классу Services.
+	-	Убедитесь, что дракон рисуется, а палитра изменяет цвет прорисовки кривой Коха.
+	Подсказки:
+	-	IImageHolder, PictureBoxImageHolder и Palette должны биндиться в единственном экземпляре.
+	-	Пример биндинга в единственном экземпляре: container.Bind<IInterface>.To<Class>().InSingletonScope();
+	-	Биндинг IImageHolder и PictureBoxImageHolder должен указывать на один и тот же объект PictureBoxImageHolder.
+	Пример такого биндинга: container.Bind<IInterface, SomeClass>().To<SomeClass>();
