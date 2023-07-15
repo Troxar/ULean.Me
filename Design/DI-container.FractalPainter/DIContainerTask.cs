@@ -6,6 +6,7 @@ using FractalPainting.Infrastructure.Common;
 using FractalPainting.Infrastructure.UiActions;
 using Ninject;
 using Ninject.Extensions.Conventions;
+using Ninject.Extensions.Factory;
 
 namespace FractalPainting.App
 {
@@ -29,6 +30,7 @@ namespace FractalPainting.App
             container.Bind<IImageHolder, PictureBoxImageHolder>().To<PictureBoxImageHolder>().InSingletonScope();
             container.Bind<ImageSettings>().ToConstant(Services.GetImageSettings());
             container.Bind<Palette>().ToSelf().InSingletonScope();
+            container.Bind<IDragonPainterFactory>().ToFactory();
 
             return container;
         }
@@ -80,22 +82,22 @@ namespace FractalPainting.App
 
     public class DragonFractalAction : IUiAction
     {
-        private readonly IImageHolder _imageHolder;
+        private readonly IDragonPainterFactory _painterFactory;
 
         public MenuCategory Category => MenuCategory.Fractals;
         public string Name => "Дракон";
         public string Description => "Дракон Хартера-Хейтуэя";
 
-        public DragonFractalAction(IImageHolder imageHolder)
+        public DragonFractalAction(IDragonPainterFactory painterFactory)
         {
-            _imageHolder = imageHolder;
+            _painterFactory = painterFactory;
         }
 
         public void Perform()
         {
             var dragonSettings = CreateRandomSettings();
             SettingsForm.For(dragonSettings).ShowDialog();
-            var painter = new DragonPainter(_imageHolder, dragonSettings);
+            var painter = _painterFactory.CreateDragonPainter(dragonSettings);
             painter.Paint();
         }
 
@@ -165,5 +167,10 @@ namespace FractalPainting.App
             }
             imageHolder.UpdateUi();
         }
+    }
+
+    public interface IDragonPainterFactory
+    {
+        DragonPainter CreateDragonPainter(DragonSettings settings);
     }
 }
