@@ -26,10 +26,9 @@ namespace FractalPainting.App
                 .InheritedFrom<IUiAction>()
                 .BindSingleInterface());
             container.Bind<AppSettings>().ToConstant(Services.GetAppSettings());
-            container.Bind<IImageHolder>().ToConstant(Services.GetImageHolder());
+            container.Bind<IImageHolder, PictureBoxImageHolder>().To<PictureBoxImageHolder>().InSingletonScope();
             container.Bind<ImageSettings>().ToConstant(Services.GetImageSettings());
-            container.Bind<Palette>().ToConstant(Services.GetPalette());
-            container.Bind<PictureBoxImageHolder>().ToConstant(Services.GetPictureBoxImageHolder());
+            container.Bind<Palette>().ToSelf().InSingletonScope();
 
             return container;
         }
@@ -38,20 +37,14 @@ namespace FractalPainting.App
     public static class Services
     {
         private static readonly SettingsManager settingsManager;
-        private static readonly PictureBoxImageHolder pictureBoxImageHolder;
-        private static readonly Palette palette;
         private static readonly AppSettings appSettings;
         private static readonly IImageSettingsProvider imageSettingsProvider;
-        private static readonly IImageDirectoryProvider imageDirectoryProvider;
 
         static Services()
         {
-            palette = new Palette();
-            pictureBoxImageHolder = new PictureBoxImageHolder();
             settingsManager = new SettingsManager(new XmlObjectSerializer(), new FileBlobStorage());
             appSettings = settingsManager.Load();
             imageSettingsProvider = appSettings;
-            imageDirectoryProvider = appSettings;
         }
 
         public static IObjectSerializer CreateObjectSerializer()
@@ -67,21 +60,6 @@ namespace FractalPainting.App
         public static SettingsManager GetSettingsManager()
         {
             return settingsManager;
-        }
-
-        public static PictureBoxImageHolder GetPictureBoxImageHolder()
-        {
-            return pictureBoxImageHolder;
-        }
-
-        public static IImageHolder GetImageHolder()
-        {
-            return pictureBoxImageHolder;
-        }
-
-        public static Palette GetPalette()
-        {
-            return palette;
         }
 
         public static ImageSettings GetImageSettings()
