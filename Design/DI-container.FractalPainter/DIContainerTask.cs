@@ -102,17 +102,22 @@ namespace FractalPainting.App
 
     public class DragonFractalAction : IUiAction
     {
+        private readonly IImageHolder _imageHolder;
+
         public MenuCategory Category => MenuCategory.Fractals;
         public string Name => "Дракон";
         public string Description => "Дракон Хартера-Хейтуэя";
 
+        public DragonFractalAction(IImageHolder imageHolder)
+        {
+            _imageHolder = imageHolder;
+        }
+
         public void Perform()
         {
             var dragonSettings = CreateRandomSettings();
-            // редактируем настройки:
             SettingsForm.For(dragonSettings).ShowDialog();
-            // создаём painter с такими настройками
-            var painter = new DragonPainter(Services.GetImageHolder(), dragonSettings);
+            var painter = new DragonPainter(_imageHolder, dragonSettings);
             painter.Paint();
         }
 
