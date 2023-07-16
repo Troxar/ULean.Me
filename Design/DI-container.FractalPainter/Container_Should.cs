@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using System.Windows.Forms;
+using Castle.DynamicProxy.Internal;
 using FractalPainting.App;
+using FractalPainting.App.Fractals;
 using FractalPainting.Infrastructure.Common;
 using FractalPainting.Infrastructure.UiActions;
 using Ninject;
@@ -100,6 +103,31 @@ namespace FractalPainting.Tests
         public void ImageSettings_ShouldBeInSingletonScope()
         {
             CheckSingletonScope(typeof(ImageSettings));
+        }
+
+        [Test]
+        public void SecretTest_DragonPainter_ShouldStoreDependenciesInPrivateFields()
+        {
+            var fields = typeof(DragonPainter).GetAllFields();
+            Assert.IsTrue(fields.All(field => field.IsPrivate), "All fields of DragonPainter should be private");
+
+            var expected = new[]
+            {
+                typeof(IImageHolder),
+                typeof(DragonSettings),
+                typeof(Palette),
+            };
+            var actualTypes = fields.Select(field => field.FieldType);
+
+            CollectionAssert.AreEquivalent(expected, actualTypes);
+        }
+
+        [Test]
+        public void SecretTest_KochFractalAction_ShouldHaveLazyKochPainterDependency()
+        {
+            var types = new Type[] { typeof(Lazy<KochPainter>) };
+            var ctor = typeof(KochFractalAction).GetConstructor(types);
+            Assert.IsNotNull(ctor, "KochFractalAction should have a constructor with Lazy<KochPainter> type");
         }
 
         private void CheckSingletonScope(Type checkingType)
