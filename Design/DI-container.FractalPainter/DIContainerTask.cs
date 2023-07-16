@@ -26,11 +26,17 @@ namespace FractalPainting.App
                 .SelectAllClasses()
                 .InheritedFrom<IUiAction>()
                 .BindSingleInterface());
-            container.Bind<AppSettings>().ToConstant(Services.GetAppSettings());
+            container.Bind<AppSettings>().ToMethod(context => context.Kernel.Get<SettingsManager>().Load()).InSingletonScope();
             container.Bind<IImageHolder, PictureBoxImageHolder>().To<PictureBoxImageHolder>().InSingletonScope();
-            container.Bind<ImageSettings>().ToConstant(Services.GetImageSettings());
+            container.Bind<ImageSettings>().ToMethod(context => context.Kernel.Get<AppSettings>().ImageSettings).InSingletonScope();
             container.Bind<Palette>().ToSelf().InSingletonScope();
             container.Bind<IDragonPainterFactory>().ToFactory();
+            container.Bind<IKochPainterFactory>().ToFactory();
+            container.Bind<IObjectSerializer>().To<XmlObjectSerializer>()
+                .WhenInjectedInto<SettingsManager>().InSingletonScope();
+            container.Bind<IBlobStorage>().To<FileBlobStorage>()
+                .WhenInjectedInto<SettingsManager>().InSingletonScope();
+            container.Bind<SettingsManager>().ToSelf().InSingletonScope();
 
             return container;
         }
@@ -64,19 +70,9 @@ namespace FractalPainting.App
             return settingsManager;
         }
 
-        public static ImageSettings GetImageSettings()
-        {
-            return appSettings.ImageSettings;
-        }
-
         public static IImageSettingsProvider GetImageSettingsProvider()
         {
             return imageSettingsProvider;
-        }
-
-        public static AppSettings GetAppSettings()
-        {
-            return appSettings;
         }
     }
 
@@ -109,20 +105,21 @@ namespace FractalPainting.App
 
     public class KochFractalAction : IUiAction
     {
-        private readonly Lazy<KochPainter> _painter;
+        private readonly IKochPainterFactory _painterFactory;
 
         public MenuCategory Category => MenuCategory.Fractals;
         public string Name => "Кривая Коха";
         public string Description => "Кривая Коха";
 
-        public KochFractalAction(Lazy<KochPainter> painter)
+        public KochFractalAction(IKochPainterFactory painterFactory)
         {
-            _painter = painter;
+            _painterFactory = painterFactory;
         }
 
         public void Perform()
         {
-            _painter.Value.Paint();
+            var painter = _painterFactory.CreateKochPainter();
+            painter.Paint();
         }
     }
 
@@ -176,5 +173,10 @@ namespace FractalPainting.App
     public interface IDragonPainterFactory
     {
         DragonPainter CreateDragonPainter(DragonSettings settings);
+    }
+
+    public interface IKochPainterFactory
+    {
+        KochPainter CreateKochPainter();
     }
 }
