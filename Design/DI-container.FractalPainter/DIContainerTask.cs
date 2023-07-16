@@ -25,7 +25,7 @@ namespace FractalPainting.App
             container.Bind(config => config.FromThisAssembly()
                 .SelectAllClasses()
                 .InheritedFrom<IUiAction>()
-                .BindSingleInterface());
+                .BindAllInterfaces());
             container.Bind<AppSettings>().ToMethod(context => context.Kernel.Get<SettingsManager>().Load()).InSingletonScope();
             container.Bind<IImageHolder, PictureBoxImageHolder>().To<PictureBoxImageHolder>().InSingletonScope();
             container.Bind<ImageSettings>().ToMethod(context => context.Kernel.Get<AppSettings>().ImageSettings).InSingletonScope();
