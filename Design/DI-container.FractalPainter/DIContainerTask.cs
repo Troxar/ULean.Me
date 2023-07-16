@@ -129,13 +129,15 @@ namespace FractalPainting.App
     public class DragonPainter
     {
         private readonly IImageHolder imageHolder;
+        private readonly Palette palette;
         private readonly DragonSettings settings;
         private readonly float size;
         private Size imageSize;
 
-        public DragonPainter(IImageHolder imageHolder, DragonSettings settings)
+        public DragonPainter(IImageHolder imageHolder, Palette palette, DragonSettings settings)
         {
             this.imageHolder = imageHolder;
+            this.palette = palette;
             this.settings = settings;
             imageSize = imageHolder.GetImageSize();
             size = Math.Min(imageSize.Width, imageSize.Height) / 2.1f;
@@ -144,8 +146,10 @@ namespace FractalPainting.App
         public void Paint()
         {
             using (var graphics = imageHolder.StartDrawing())
+            using (var backgroundBrush = new SolidBrush(palette.BackgroundColor))
+            using (var penBrush = new SolidBrush(palette.PrimaryColor))
             {
-                graphics.FillRectangle(Brushes.Black, 0, 0, imageSize.Width, imageSize.Height);
+                graphics.FillRectangle(backgroundBrush, 0, 0, imageSize.Width, imageSize.Height);
                 var r = new Random();
                 var cosa = (float)Math.Cos(settings.Angle1);
                 var sina = (float)Math.Sin(settings.Angle1);
@@ -157,7 +161,7 @@ namespace FractalPainting.App
                 var p = new PointF(0, 0);
                 foreach (var i in Enumerable.Range(0, settings.IterationsCount))
                 {
-                    graphics.FillRectangle(Brushes.Yellow, imageSize.Width / 3f + p.X, imageSize.Height / 2f + p.Y, 1, 1);
+                    graphics.FillRectangle(penBrush, imageSize.Width / 3f + p.X, imageSize.Height / 2f + p.Y, 1, 1);
                     if (r.Next(0, 2) == 0)
                         p = new PointF(scale * (p.X * cosa - p.Y * sina), scale * (p.X * sina + p.Y * cosa));
                     else
