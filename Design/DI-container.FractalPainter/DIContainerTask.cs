@@ -42,40 +42,6 @@ namespace FractalPainting.App
         }
     }
 
-    public static class Services
-    {
-        private static readonly SettingsManager settingsManager;
-        private static readonly AppSettings appSettings;
-        private static readonly IImageSettingsProvider imageSettingsProvider;
-
-        static Services()
-        {
-            settingsManager = new SettingsManager(new XmlObjectSerializer(), new FileBlobStorage());
-            appSettings = settingsManager.Load();
-            imageSettingsProvider = appSettings;
-        }
-
-        public static IObjectSerializer CreateObjectSerializer()
-        {
-            return new XmlObjectSerializer();
-        }
-
-        public static IBlobStorage CreateIBlobStorage()
-        {
-            return new FileBlobStorage();
-        }
-
-        public static SettingsManager GetSettingsManager()
-        {
-            return settingsManager;
-        }
-
-        public static IImageSettingsProvider GetImageSettingsProvider()
-        {
-            return imageSettingsProvider;
-        }
-    }
-
     public class DragonFractalAction : IUiAction
     {
         private readonly IDragonPainterFactory _painterFactory;
