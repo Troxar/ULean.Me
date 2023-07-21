@@ -12,9 +12,7 @@ namespace Streams.Resources
         private readonly string _key;
         private readonly byte[] _separator;
 
-        private byte[] _value = null;
-        private bool _valueRead;
-        private int _pointer;
+        private SegmentalReader<byte> _reader;
 
         public ResourceReaderStream(Stream stream, string key)
         {
@@ -25,10 +23,10 @@ namespace Streams.Resources
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (_value is null)
+            if (_reader is null)
                 SeekValue();
 
-            return _valueRead
+            return _reader?.ValueRead ?? true
                 ? 0
                 : ReadFieldValue(buffer, offset, count);
         }
@@ -40,19 +38,15 @@ namespace Streams.Resources
 
             foreach (var segment in Segments())
             {
-                if (!keyFound)
+                if (keyFound)
                 {
-                    if (i % 2 == 0 && segment.GetString() == _key)
-                        keyFound = true;
-                    continue;
+                    _reader = new SegmentalReader<byte>(segment);
+                    return;
                 }
-
-                _value = segment;
-                break;
+                keyFound = i % 2 == 0 && segment.GetString() == _key;
             }
 
-            if (_value is null)
-                throw new EndOfStreamException();
+            throw new EndOfStreamException();
         }
 
         private IEnumerable<byte[]> Segments()
@@ -90,12 +84,13 @@ namespace Streams.Resources
 
         private int ReadFieldValue(byte[] buffer, int offset, int count)
         {
-            count = Math.Min(count, _value.Length - _pointer);
-            for (int i = 0; i < count; i++)
-                buffer[i] = _value[_pointer + i];
-            _pointer += count;
-            _valueRead = _pointer == _value.Length;
-            return count;
+            if (_reader is null)
+                throw new InvalidOperationException("Reader not configured");
+
+            var segment = _reader.Read(count);
+            Array.Copy(segment.ToArray(), 0, buffer, offset, segment.Count);
+
+            return segment.Count;
         }
 
         public override void Flush()
@@ -133,6 +128,43 @@ namespace Streams.Resources
         public static byte[] GetDefaultSeparator()
         {
             return new byte[] { 0, 1 };
+        }
+    }
+
+    public class SegmentalReader<T>
+    {
+        public bool ValueRead { get; private set; }
+
+        private readonly T[] _value;
+        private readonly IEnumerator<ArraySegment<T>> _enumerator;
+        private int _countToRead;
+
+        public SegmentalReader(T[] value)
+        {
+            _value = value;
+            _enumerator = Segments().GetEnumerator();
+        }
+
+        public ArraySegment<T> Read(int count)
+        {
+            _countToRead = count;
+            return !ValueRead && _enumerator.MoveNext()
+                ? _enumerator.Current
+                : new ArraySegment<T>();
+        }
+
+        private IEnumerable<ArraySegment<T>> Segments()
+        {
+            var pointer = 0;
+
+            while (!ValueRead)
+            {
+                var length = Math.Min(_countToRead, _value.Length - pointer);
+                yield return new ArraySegment<T>(_value, pointer, length);
+
+                pointer += length;
+                ValueRead = pointer == _value.Length;
+            }
         }
     }
 
