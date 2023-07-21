@@ -123,6 +123,13 @@ namespace Streams.Resources
             set => throw new NotSupportedException();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _stream != null)
+                _stream.Close();
+            base.Dispose(disposing);
+        }
+
         public static byte[] GetDefaultSeparator()
         {
             return new byte[] { 0, 1 };
