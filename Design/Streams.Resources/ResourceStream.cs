@@ -18,7 +18,7 @@ namespace Streams.Resources
 
         public ResourceReaderStream(Stream stream, string key)
         {
-            _stream = stream;
+            _stream = new BufferedStream(stream, Constants.BufferSize);
             _key = key;
             _separator = GetDefaultSeparator();
         }
@@ -57,29 +57,25 @@ namespace Streams.Resources
 
         private IEnumerable<byte[]> Segments()
         {
-            byte[] buffer = new byte[Constants.BufferSize];
             var segment = new List<byte>();
-            var buf = new Queue<byte>(_separator.Length);
+            var buffer = new Queue<byte>(_separator.Length);
 
             while (true)
             {
-                var read = _stream.Read(buffer, 0, Constants.BufferSize);
-                if (read == 0) break;
-
-                for (int i = 0; i < read; i++)
+                var b = _stream.ReadByte();
+                if (b == -1)
+                    break;
+                buffer.Enqueue((byte)b);
+                if (buffer.Count != _separator.Length)
+                    continue;
+                if (buffer.SequenceEqual(_separator))
                 {
-                    var b = buffer[i];
-                    buf.Enqueue(b);
-                    if (buf.Count != _separator.Length) continue;
-                    if (buf.SequenceEqual(_separator))
-                    {
-                        yield return segment.ToArray();
-                        segment.Clear();
-                        buf.Clear();
-                    }
-                    else
-                        AddToSegmentAndCheck(segment, buf);
+                    yield return segment.ToArray();
+                    segment.Clear();
+                    buffer.Clear();
                 }
+                else
+                    AddToSegmentAndCheck(segment, buffer);
             }
         }
 
