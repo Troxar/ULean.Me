@@ -30,8 +30,13 @@ namespace StructBenchmarking
         {
             var classesTimes = new List<ExperimentResult>();
             var structuresTimes = new List<ExperimentResult>();
-            
-            //...
+            var factory = new MethodCallExperimentFactory(benchmark, repetitionsCount);
+
+            foreach (int fieldscount in Constants.FieldCounts)
+            {
+                structuresTimes.Add(factory.CreateStructResult(fieldscount));
+                classesTimes.Add(factory.CreateClassResult(fieldscount));
+            }
 
             return new ChartData
             {
@@ -58,6 +63,27 @@ namespace StructBenchmarking
             public override ExperimentResult CreateClassResult(int fieldsCount)
             {
                 var task = new ClassArrayCreationTask(fieldsCount);
+                return CreateResult(task, fieldsCount);
+            }
+        }
+
+        private class MethodCallExperimentFactory : ExperimentFactory
+        {
+            public MethodCallExperimentFactory(IBenchmark benchmark, int repetitionsCount)
+                : base(benchmark, repetitionsCount)
+            {
+
+            }
+
+            public override ExperimentResult CreateStructResult(int fieldsCount)
+            {
+                var task = new MethodCallWithStructArgumentTask(fieldsCount);
+                return CreateResult(task, fieldsCount);
+            }
+
+            public override ExperimentResult CreateClassResult(int fieldsCount)
+            {
+                var task = new MethodCallWithClassArgumentTask(fieldsCount);
                 return CreateResult(task, fieldsCount);
             }
         }
