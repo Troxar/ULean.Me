@@ -11,7 +11,7 @@ namespace MyPhotoshop
 
         public void Parse(double[] parameters)
         {
-            
+
         }
     }
 }

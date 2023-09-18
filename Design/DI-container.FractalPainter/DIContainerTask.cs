@@ -1,12 +1,12 @@
-using System;
-using System.Drawing;
-using System.Linq;
 using FractalPainting.App.Fractals;
 using FractalPainting.Infrastructure.Common;
 using FractalPainting.Infrastructure.UiActions;
 using Ninject;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;
+using System;
+using System.Drawing;
+using System.Linq;
 
 namespace FractalPainting.App
 {
@@ -95,7 +95,7 @@ namespace FractalPainting.App
         private readonly IImageHolder imageHolder;
         private readonly Palette palette;
         private readonly DragonSettings settings;
-        
+
         public DragonPainter(IImageHolder imageHolder, Palette palette, DragonSettings settings)
         {
             this.imageHolder = imageHolder;

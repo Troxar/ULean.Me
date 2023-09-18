@@ -34,8 +34,8 @@ public class DiskTreeNode
             return;
 
         var position = input.IndexOf('\\');
-        var name = position == -1 
-            ? input 
+        var name = position == -1
+            ? input
             : input.Substring(0, position);
 
         if (!Nodes.Keys.Contains(name))
@@ -52,7 +52,7 @@ public class DiskTreeNode
             var prefix = new string(' ', prefixLength);
             yield return prefix + Name;
         }
-        
+
         foreach (var node in Nodes.OrderBy(x => x.Key, StringComparer.Ordinal))
             foreach (var str in node.Value.GetFormattedNodes(prefixLength + 1))
                 yield return str;

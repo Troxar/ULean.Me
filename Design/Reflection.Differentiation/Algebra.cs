@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
- 
+
 namespace Reflection.Differentiation
 {
     public static class Algebra
@@ -8,7 +8,7 @@ namespace Reflection.Differentiation
         public static Expression<Func<double, double>> Differentiate(Expression<Func<double, double>> expression)
         {
             return Expression.Lambda<Func<double, double>>(
-                Differentiate(expression.Body), 
+                Differentiate(expression.Body),
                 expression.Parameters);
         }
 

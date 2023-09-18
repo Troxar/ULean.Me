@@ -2,7 +2,7 @@ namespace Inheritance.MapObjects
 {
     public abstract class MapObject
     {
-        
+
     }
 
     public interface IHaveOwner

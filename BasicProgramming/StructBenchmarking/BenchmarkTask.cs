@@ -1,18 +1,18 @@
+using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.Text;
-using NUnit.Framework;
 
 namespace StructBenchmarking
 {
     public class Benchmark : IBenchmark
-	{
+    {
         public double MeasureDurationInMs(ITask task, int repetitionCount)
         {
             GC.Collect();                   // Эти две строчки нужны, чтобы уменьшить вероятность того,
             GC.WaitForPendingFinalizers();  // что Garbadge Collector вызовется в середине измерений
                                             // и как-то повлияет на них.
-            
+
             task.Run();                     // warming call
 
             var watch = new Stopwatch();
@@ -25,7 +25,7 @@ namespace StructBenchmarking
 
             return watch.ElapsedMilliseconds / (double)repetitionCount;
         }
-	}
+    }
 
     [TestFixture]
     public class RealBenchmarkUsageSample

@@ -32,7 +32,7 @@ namespace func.brainfuck
                 vm.MemoryPointer = vm.Memory.Length - 1;
         }
 
-        private static void RegisterCommandForSymbolRange(IVirtualMachine vm, 
+        private static void RegisterCommandForSymbolRange(IVirtualMachine vm,
             char start, char end, Action<IVirtualMachine, char> action)
         {
             for (char c = start; c <= end; c++)

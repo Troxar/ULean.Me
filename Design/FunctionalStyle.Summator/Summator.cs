@@ -10,7 +10,7 @@ namespace FP
         private readonly ISumFormatter formatter;
         private readonly Func<DataSource> openDatasource;
         private readonly string outputFilename;
-        
+
         public Summator(Func<DataSource> openDatasource, ISumFormatter formatter, string outputFilename)
         {
             this.openDatasource = openDatasource;

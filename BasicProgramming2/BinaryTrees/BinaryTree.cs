@@ -36,7 +36,7 @@ public class BinaryTree<T> : IEnumerable<T> where T : IComparable
 
     public BinaryTree()
     {
-        
+
     }
 
     private BinaryTree(T key)

@@ -76,7 +76,7 @@ namespace Incapsulation.RationalNumbers
                 left.IsNan || right.IsNan);
         }
 
-        public static implicit operator double(Rational rational) 
+        public static implicit operator double(Rational rational)
         {
             return rational.IsNan
                 ? double.NaN

@@ -13,7 +13,7 @@ namespace Memory.Timers
         private readonly TextWriter _writer;
         private readonly string _name;
         private readonly Stopwatch _timer;
-        public  readonly List<TimerResult> NestedResults = new List<TimerResult>();
+        public readonly List<TimerResult> NestedResults = new List<TimerResult>();
 
         private Timer(string name)
         {

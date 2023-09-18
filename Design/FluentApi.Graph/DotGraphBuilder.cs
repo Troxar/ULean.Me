@@ -3,9 +3,9 @@ using System.Globalization;
 
 namespace FluentApi.Graph
 {
-	public class DotGraphBuilder
-	{
-		private readonly Graph _graph;
+    public class DotGraphBuilder
+    {
+        private readonly Graph _graph;
 
         private DotGraphBuilder(Graph graph)
         {
@@ -13,7 +13,7 @@ namespace FluentApi.Graph
         }
 
         public static DotGraphBuilder DirectedGraph(string name)
-		{
+        {
             var graph = new Graph(name, true, false);
             return new DotGraphBuilder(graph);
         }
@@ -35,9 +35,9 @@ namespace FluentApi.Graph
         }
 
         public string Build()
-		{
-			return _graph.ToDotFormat();
-		}
+        {
+            return _graph.ToDotFormat();
+        }
     }
 
     #region ItemBuilder
@@ -75,7 +75,7 @@ namespace FluentApi.Graph
     {
         public NodeBuilder(DotGraphBuilder graphBuilder, GraphNode item)
             : base(graphBuilder, item) { }
-        
+
         public override DotGraphBuilder With(Action<NodeAttributeBuilder> action)
         {
             action(new NodeAttributeBuilder(_item));
@@ -136,7 +136,7 @@ namespace FluentApi.Graph
     public class NodeAttributeBuilder : AttributeBuilder<GraphNode, NodeAttributeBuilder>
     {
         public NodeAttributeBuilder(GraphNode node) : base(node) { }
-        
+
         protected override NodeAttributeBuilder SetAttribute<TValue>(string attribute, TValue value)
         {
             _item.Attributes[attribute] = ConvertValue(value);

@@ -5,81 +5,81 @@ using System.Text;
 
 namespace Delegates.Reports
 {
-	public class ReportMaker<TStatsResult>
-	{
+    public class ReportMaker<TStatsResult>
+    {
         private readonly IStatisticsMaker<TStatsResult> _statsMaker;
-		private readonly IReporter _reporter;
-		
-		public ReportMaker(
+        private readonly IReporter _reporter;
+
+        public ReportMaker(
             IStatisticsMaker<TStatsResult> statsMaker,
             IReporter reporter)
-		{
+        {
             _statsMaker = statsMaker;
-			_reporter = reporter;
-		}
+            _reporter = reporter;
+        }
 
-		public string MakeReport(IEnumerable<Measurement> measurements)
-		{
+        public string MakeReport(IEnumerable<Measurement> measurements)
+        {
             var data = measurements.ToList();
             var result = new StringBuilder();
-			result.Append(_reporter.MakeCaption(_statsMaker.Caption));
-			result.Append(_reporter.BeginList());
-			result.Append(_reporter.MakeItem("Temperature",
+            result.Append(_reporter.MakeCaption(_statsMaker.Caption));
+            result.Append(_reporter.BeginList());
+            result.Append(_reporter.MakeItem("Temperature",
                 _statsMaker.MakeStatistics(data.Select(z => z.Temperature)).ToString()));
-			result.Append(_reporter.MakeItem("Humidity",
+            result.Append(_reporter.MakeItem("Humidity",
                 _statsMaker.MakeStatistics(data.Select(z => z.Humidity)).ToString()));
-			result.Append(_reporter.EndList());
-			return result.ToString();
-		}
-	}
+            result.Append(_reporter.EndList());
+            return result.ToString();
+        }
+    }
 
-	public static class ReportMakerHelper
-	{
-		private static string MakeReport<TStatsResult>(
+    public static class ReportMakerHelper
+    {
+        private static string MakeReport<TStatsResult>(
             IStatisticsMaker<TStatsResult> statsMaker,
             IReporter reporter,
             IEnumerable<Measurement> data)
-		{
-			return new ReportMaker<TStatsResult>(
+        {
+            return new ReportMaker<TStatsResult>(
                 statsMaker,
                 reporter).MakeReport(data);
-		}
+        }
 
         public static string MeanAndStdHtmlReport(IEnumerable<Measurement> measurements)
-		{
+        {
             return MakeReport(
                 new MeanAndStdStatisticsMaker(),
                 new HtmlReporter(),
                 measurements);
-		}
+        }
 
-		public static string MedianMarkdownReport(IEnumerable<Measurement> measurements)
-		{
+        public static string MedianMarkdownReport(IEnumerable<Measurement> measurements)
+        {
             return MakeReport(
                 new MedianStatisticsMaker(),
                 new MarkdownReporter(),
                 measurements);
         }
 
-		public static string MeanAndStdMarkdownReport(IEnumerable<Measurement> measurements)
-		{
+        public static string MeanAndStdMarkdownReport(IEnumerable<Measurement> measurements)
+        {
             return MakeReport(
                 new MeanAndStdStatisticsMaker(),
                 new MarkdownReporter(),
                 measurements);
         }
 
-		public static string MedianHtmlReport(IEnumerable<Measurement> measurements)
-		{
+        public static string MedianHtmlReport(IEnumerable<Measurement> measurements)
+        {
             return MakeReport(
                 new MedianStatisticsMaker(),
                 new HtmlReporter(),
                 measurements);
         }
-	}
+    }
 
-	public interface IStatisticsMaker<TResult>
-	{
+    public interface IStatisticsMaker<TResult>
+    {
         string Caption { get; }
         TResult MakeStatistics(IEnumerable<double> data);
     }
@@ -115,7 +115,7 @@ namespace Delegates.Reports
         }
     }
 
-	public interface IReporter
+    public interface IReporter
     {
         string MakeCaption(string caption);
         string BeginList();

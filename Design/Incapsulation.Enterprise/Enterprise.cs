@@ -7,7 +7,7 @@ namespace Incapsulation.EnterpriseTask
     {
         public Guid Guid { get; }
         public string Name { get; set; }
-        
+
         private string _inn;
         public string Inn
         {
@@ -16,7 +16,7 @@ namespace Incapsulation.EnterpriseTask
         }
 
         public DateTime EstablishDate { get; set; }
-        
+
         public TimeSpan ActiveTimeSpan
         {
             get { return DateTime.Now - EstablishDate; }

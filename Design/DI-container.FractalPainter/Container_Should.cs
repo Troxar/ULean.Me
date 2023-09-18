@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Windows.Forms;
 using Castle.DynamicProxy.Internal;
 using FractalPainting.App;
 using FractalPainting.App.Fractals;
@@ -8,6 +5,9 @@ using FractalPainting.Infrastructure.Common;
 using FractalPainting.Infrastructure.UiActions;
 using Ninject;
 using NUnit.Framework;
+using System;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace FractalPainting.Tests
 {

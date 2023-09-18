@@ -1,9 +1,9 @@
-using System;
-using System.IO;
-using System.Windows.Forms;
-using System.Drawing;
 using FractalPainting.Infrastructure.Common;
 using FractalPainting.Infrastructure.UiActions;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
 namespace FractalPainting.App
 {

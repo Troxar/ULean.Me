@@ -23,8 +23,8 @@ namespace Incapsulation.Failures
             int day,
             int month,
             int year,
-            int[] failureTypes, 
-            int[] deviceId, 
+            int[] failureTypes,
+            int[] deviceId,
             object[][] times,
             List<Dictionary<string, object>> devices)
         {
@@ -32,7 +32,7 @@ namespace Incapsulation.Failures
                 new DateTime(year, month, day),
                 ToFailures(deviceId, ToDevices(devices), failureTypes, times));
         }
-        
+
         private static List<string> FindDevicesFailedBeforeDate(DateTime date, Failure[] failures)
         {
             return failures
@@ -41,7 +41,7 @@ namespace Incapsulation.Failures
                 .ToList();
         }
 
-        private static Failure[] ToFailures(int[] deviceIds, 
+        private static Failure[] ToFailures(int[] deviceIds,
             Dictionary<int, Device> devices, int[] failureTypes, object[][] times)
         {
             CheckFailureTypes(failureTypes, deviceIds.Length);
@@ -56,7 +56,7 @@ namespace Incapsulation.Failures
                     throw new ArgumentOutOfRangeException($"{nameof(failureTypes)}[{i}]");
                 failures[i] = new Failure(devices[deviceIds[i]], (FailureType)failureTypes[i], ToDate(times[i]));
             }
-            
+
             return failures;
         }
 
@@ -75,7 +75,7 @@ namespace Incapsulation.Failures
             if (times.Length != expectedLength)
                 throw new FormatException($"Invalid length: {nameof(times)}");
         }
-        
+
         private static DateTime ToDate(object[] time)
         {
             if (time is null)
@@ -137,7 +137,7 @@ namespace Incapsulation.Failures
         public readonly Device Device;
         public readonly FailureType FailureType;
         public readonly DateTime Date;
-        
+
         public Failure(Device device, FailureType failureType, DateTime date)
         {
             Device = device;
@@ -150,7 +150,7 @@ namespace Incapsulation.Failures
     {
         public readonly int Id;
         public readonly string Name;
-        
+
         public Device(int id, string name)
         {
             Id = id;
