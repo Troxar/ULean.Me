@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using NUnit.Framework;
 
 namespace StructBenchmarking
@@ -33,7 +33,63 @@ namespace StructBenchmarking
         [Test]
         public void StringConstructorFasterThanStringBuilder()
         {
-            throw new NotImplementedException();
+            int count = 10000;
+            char letter = 'a';
+
+            var sbCtor = new StringBuilderConstructor(count, letter);
+            var stringCtor = new StringConstructor(count, letter);
+
+            int repetitionCount = 1000;
+
+            var benchmark = new Benchmark();
+            double durationSb = benchmark.MeasureDurationInMs(sbCtor, repetitionCount);
+            double durationString = benchmark.MeasureDurationInMs(stringCtor, repetitionCount);
+
+            Assert.Less(durationString, durationSb);
+            Assert.AreEqual(sbCtor.Result, stringCtor.Result);
+        }
+    }
+
+    public class StringBuilderConstructor : ITask
+    {
+        int _count;
+        char _letter;
+
+        public string Result { get; private set; }
+
+        public StringBuilderConstructor(int count, char letter)
+        {
+            _count = count;
+            _letter = letter;
+        }
+
+        public void Run()
+        {
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < _count; i++)
+                sb.Append(_letter);
+
+            Result = sb.ToString();
+        }
+    }
+
+    public class StringConstructor : ITask
+    {
+        int _count;
+        char _letter;
+
+        public string Result { get; private set; }
+
+        public StringConstructor(int count, char letter)
+        {
+            _count = count;
+            _letter = letter;
+        }
+
+        public void Run()
+        {
+            Result = new string(_letter, _count);
         }
     }
 }
