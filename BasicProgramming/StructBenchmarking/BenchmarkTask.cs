@@ -12,9 +12,19 @@ namespace StructBenchmarking
             GC.Collect();                   // Эти две строчки нужны, чтобы уменьшить вероятность того,
             GC.WaitForPendingFinalizers();  // что Garbadge Collector вызовется в середине измерений
                                             // и как-то повлияет на них.
-               
-			throw new NotImplementedException();
-		}
+            
+            task.Run();                     // warming call
+
+            var watch = new Stopwatch();
+            watch.Start();
+
+            for (int i = 0; i < repetitionCount; i++)
+                task.Run();
+
+            watch.Stop();
+
+            return watch.ElapsedMilliseconds / (double)repetitionCount;
+        }
 	}
 
     [TestFixture]
